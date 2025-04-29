@@ -40,7 +40,6 @@ export const getAccessToken = async (authCode, secretKey) => {
       auth_code: authCode,
     });
     
-    console.log("Access token response:", response);
     
     if (response.s === 'ok' && response.access_token) {
       // Store the access token in cookies

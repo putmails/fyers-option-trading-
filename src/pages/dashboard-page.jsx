@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from 'react';
 import { 
   Box, 
   Container, 
@@ -9,28 +10,61 @@ import {
   Tab,
   Card,
   CardContent,
-  Divider
+  Divider,
+  Alert,
+  Chip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import OptionChain from '../components/Dashboard/option-chain';
+import OptionDetails from '../components/Dashboard/option-details';
+import TradingForm from '../components/Dashboard/trading-form.jsx';
+import Loader from '../components/common/loader-component';
+import { calculatePutCallRatio } from '../utils/options-helper';
 
 const Dashboard = () => {
-  // eslint-disable-next-line no-unused-vars
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // State for options trading
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [underlyingAsset, setUnderlyingAsset] = useState(null);
+  const [optionChainData, setOptionChainData] = useState(null);
+  const [selectedExpiryDate, setSelectedExpiryDate] = useState(null);
 
   // Redirect to home if not logged in
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/');
+    } else {
+      // Simulate loading data
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   }, [isLoggedIn, navigate]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  // Handle option selection from the option chain
+  const handleOptionSelect = (option, underlying, expiryDate) => {
+    setSelectedOption(option);
+    setUnderlyingAsset(underlying);
+    setSelectedExpiryDate(expiryDate);
+  };
+
+  // Handle option chain data update
+  const handleOptionChainDataUpdate = (data) => {
+    setOptionChainData(data);
+  };
+
+  // Calculate PCR (Put-Call Ratio)
+  const pcr = optionChainData ? calculatePutCallRatio(optionChainData) : null;
 
   // Mock account data
   const accountData = {
@@ -46,8 +80,20 @@ const Dashboard = () => {
     { symbol: 'BANKNIFTY 25APR 44000 PE', qty: 25, avgPrice: 150.75, ltp: 140.25, pnl: '-262.50' }
   ];
 
+  if (loading) {
+    return <Loader message="Loading dashboard..." />;
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom>
         Trading Dashboard
       </Typography>
@@ -148,21 +194,75 @@ const Dashboard = () => {
                 <Tab label="Orders" />
               </Tabs>
             </Box>
-            <Box sx={{ p: 0 }}>
-              {tabValue === 0 && (
-                <OptionChain />
-              )}
-              {tabValue === 1 && (
-                <Box p={2}>
-                  <Typography>Trading form would go here</Typography>
-                </Box>
-              )}
-              {tabValue === 2 && (
-                <Box p={2}>
-                  <Typography>Orders list would go here</Typography>
-                </Box>
-              )}
-            </Box>
+            
+            {/* Option Chain Tab */}
+            {tabValue === 0 && (
+              <Box>
+                <Grid container spacing={0}>
+                  {/* Option Chain */}
+                  <Grid item xs={12} md={8}>
+                    <OptionChain 
+                      onOptionSelect={handleOptionSelect}
+                      onDataUpdate={handleOptionChainDataUpdate}
+                    />
+                  </Grid>
+                  
+                  {/* Option Details */}
+                  <Grid item xs={12} md={4} sx={{ borderLeft: '1px solid #e0e0e0' }}>
+                    <Box sx={{ p: 2, position: 'sticky', top: 0 }}>
+                      {pcr && (
+                        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Put-Call Ratio:
+                          </Typography>
+                          <Chip 
+                            label={pcr.toFixed(2)} 
+                            color={pcr > 1 ? 'error' : pcr < 0.5 ? 'success' : 'warning'} 
+                            size="small"
+                          />
+                        </Box>
+                      )}
+                      
+                      <OptionDetails 
+                        option={selectedOption} 
+                        underlying={underlyingAsset}
+                        expiryDate={selectedExpiryDate}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+            
+            {/* Trade Tab */}
+            {tabValue === 1 && (
+              <Box p={2}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TradingForm 
+                      selectedOption={selectedOption}
+                      underlying={underlyingAsset}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <OptionDetails 
+                      option={selectedOption} 
+                      underlying={underlyingAsset}
+                      expiryDate={selectedExpiryDate}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+            
+            {/* Orders Tab */}
+            {tabValue === 2 && (
+              <Box p={2}>
+                <Typography variant="body1" sx={{ p: 2, textAlign: 'center' }}>
+                  No open orders
+                </Typography>
+              </Box>
+            )}
           </Paper>
         </Grid>
       </Grid>

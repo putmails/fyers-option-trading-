@@ -18,7 +18,6 @@ const AuthCallback = () => {
         // Get the auth_code from URL query params
         const searchParams = new URLSearchParams(location.search);
         const authCode = searchParams.get('auth_code');
-        console.log("🚀 ~ handleAuthCallback ~ authCode:", authCode)
         
         if (!authCode) {
           throw new Error('Authorization code not found in URL');
@@ -33,8 +32,6 @@ const AuthCallback = () => {
 
         // Get access token using auth code and secret key
         const response = await getAccessToken(authCode, secretKey);
-        console.log("🚀 ~ handleAuthCallback ~ response:", response)
-        
         if (response && response.access_token) {
           // Update authentication context
           updateUserAfterLogin(response.access_token);
