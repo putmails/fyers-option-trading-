@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Container, 
-  Grid, 
-  Paper, 
-  Typography, 
-  Tabs, 
+import {
+  Box,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Tabs,
   Tab,
   Card,
   CardContent,
   Divider,
   Alert,
-  Chip
+  Chip,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
@@ -71,13 +71,25 @@ const Dashboard = () => {
     availableBalance: '50,000.00',
     usedMargin: '12,500.00',
     availableMargin: '37,500.00',
-    totalPnL: '+1,250.00'
+    totalPnL: '+1,250.00',
   };
 
   // Mock positions data
   const positionsData = [
-    { symbol: 'NIFTY 25APR 18200 CE', qty: 50, avgPrice: 100.25, ltp: 120.50, pnl: '+1,012.50' },
-    { symbol: 'BANKNIFTY 25APR 44000 PE', qty: 25, avgPrice: 150.75, ltp: 140.25, pnl: '-262.50' }
+    {
+      symbol: 'NIFTY 25APR 18200 CE',
+      qty: 50,
+      avgPrice: 100.25,
+      ltp: 120.5,
+      pnl: '+1,012.50',
+    },
+    {
+      symbol: 'BANKNIFTY 25APR 44000 PE',
+      qty: 25,
+      avgPrice: 150.75,
+      ltp: 140.25,
+      pnl: '-262.50',
+    },
   ];
 
   if (loading) {
@@ -105,26 +117,48 @@ const Dashboard = () => {
             <Typography variant="h6" color="primary" gutterBottom>
               Account Summary
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" color="text.secondary">Available Balance:</Typography>
-              <Typography variant="body1">₹{accountData.availableBalance}</Typography>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                Available Balance:
+              </Typography>
+              <Typography variant="body1">
+                ₹{accountData.availableBalance}
+              </Typography>
             </Box>
             <Divider sx={{ my: 1 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" color="text.secondary">Used Margin:</Typography>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                Used Margin:
+              </Typography>
               <Typography variant="body1">₹{accountData.usedMargin}</Typography>
             </Box>
             <Divider sx={{ my: 1 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" color="text.secondary">Available Margin:</Typography>
-              <Typography variant="body1">₹{accountData.availableMargin}</Typography>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                Available Margin:
+              </Typography>
+              <Typography variant="body1">
+                ₹{accountData.availableMargin}
+              </Typography>
             </Box>
             <Divider sx={{ my: 1 }} />
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="body2" color="text.secondary">Total P&L:</Typography>
-              <Typography 
-                variant="body1" 
-                color={accountData.totalPnL.startsWith('+') ? 'success.main' : 'error.main'}
+              <Typography variant="body2" color="text.secondary">
+                Total P&L:
+              </Typography>
+              <Typography
+                variant="body1"
+                color={
+                  accountData.totalPnL.startsWith('+')
+                    ? 'success.main'
+                    : 'error.main'
+                }
                 fontWeight="bold"
               >
                 ₹{accountData.totalPnL}
@@ -149,9 +183,7 @@ const Dashboard = () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <Typography variant="body2">
-                        {position.qty}
-                      </Typography>
+                      <Typography variant="body2">{position.qty}</Typography>
                     </Grid>
                     <Grid item xs={2}>
                       <Typography variant="body2">
@@ -159,14 +191,16 @@ const Dashboard = () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={2}>
-                      <Typography variant="body2">
-                        ₹{position.ltp}
-                      </Typography>
+                      <Typography variant="body2">₹{position.ltp}</Typography>
                     </Grid>
                     <Grid item xs={2}>
-                      <Typography 
-                        variant="body2" 
-                        color={position.pnl.startsWith('+') ? 'success.main' : 'error.main'}
+                      <Typography
+                        variant="body2"
+                        color={
+                          position.pnl.startsWith('+')
+                            ? 'success.main'
+                            : 'error.main'
+                        }
                         fontWeight="bold"
                       >
                         ₹{position.pnl}
@@ -183,9 +217,9 @@ const Dashboard = () => {
         <Grid item xs={12}>
           <Paper sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs 
-                value={tabValue} 
-                onChange={handleTabChange} 
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
                 aria-label="trading tabs"
                 variant="fullWidth"
               >
@@ -194,37 +228,55 @@ const Dashboard = () => {
                 <Tab label="Orders" />
               </Tabs>
             </Box>
-            
+
             {/* Option Chain Tab */}
             {tabValue === 0 && (
               <Box>
                 <Grid container spacing={0}>
                   {/* Option Chain */}
                   <Grid item xs={12} md={8}>
-                    <OptionChain 
+                    <OptionChain
                       onOptionSelect={handleOptionSelect}
                       onDataUpdate={handleOptionChainDataUpdate}
                     />
                   </Grid>
-                  
+
                   {/* Option Details */}
-                  <Grid item xs={12} md={4} sx={{ borderLeft: '1px solid #e0e0e0' }}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={4}
+                    sx={{ borderLeft: '1px solid #e0e0e0' }}
+                  >
                     <Box sx={{ p: 2, position: 'sticky', top: 0 }}>
                       {pcr && (
-                        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box
+                          sx={{
+                            mb: 2,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
                           <Typography variant="body2" color="text.secondary">
                             Put-Call Ratio:
                           </Typography>
-                          <Chip 
-                            label={pcr.toFixed(2)} 
-                            color={pcr > 1 ? 'error' : pcr < 0.5 ? 'success' : 'warning'} 
+                          <Chip
+                            label={pcr.toFixed(2)}
+                            color={
+                              pcr > 1
+                                ? 'error'
+                                : pcr < 0.5
+                                  ? 'success'
+                                  : 'warning'
+                            }
                             size="small"
                           />
                         </Box>
                       )}
-                      
-                      <OptionDetails 
-                        option={selectedOption} 
+
+                      <OptionDetails
+                        option={selectedOption}
                         underlying={underlyingAsset}
                         expiryDate={selectedExpiryDate}
                       />
@@ -233,20 +285,20 @@ const Dashboard = () => {
                 </Grid>
               </Box>
             )}
-            
+
             {/* Trade Tab */}
             {tabValue === 1 && (
               <Box p={2}>
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
-                    <TradingForm 
+                    <TradingForm
                       selectedOption={selectedOption}
                       underlying={underlyingAsset}
                     />
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <OptionDetails 
-                      option={selectedOption} 
+                    <OptionDetails
+                      option={selectedOption}
                       underlying={underlyingAsset}
                       expiryDate={selectedExpiryDate}
                     />
@@ -254,7 +306,7 @@ const Dashboard = () => {
                 </Grid>
               </Box>
             )}
-            
+
             {/* Orders Tab */}
             {tabValue === 2 && (
               <Box p={2}>

@@ -3,13 +3,13 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 
 const Loader = ({ message = 'Loading...' }) => {
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      sx={{
+        display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center', 
+        justifyContent: 'center',
         alignItems: 'center',
-        height: '50vh'
+        height: '50vh',
       }}
     >
       <CircularProgress size={60} />

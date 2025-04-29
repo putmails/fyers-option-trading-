@@ -1,4 +1,4 @@
-import { fyersModel } from "fyers-web-sdk-v3";
+import { fyersModel } from 'fyers-web-sdk-v3';
 import { getStoredAccessToken } from './fyers-auth-service';
 
 /**
@@ -8,37 +8,41 @@ import { getStoredAccessToken } from './fyers-auth-service';
  * @param {string} timestamp - Optional timestamp
  * @returns {Promise<object>} Option chain data
  */
-export const getOptionChainData = async (symbol, strikeCount = 5, timestamp = "") => {
+export const getOptionChainData = async (
+  symbol,
+  strikeCount = 5,
+  timestamp = ''
+) => {
   try {
     // Create a new instance of FyersAPI
     const fyers = new fyersModel();
-    
+
     // Set app ID from environment variable
     fyers.setAppId(import.meta.env.VITE_FYERS_APP_ID);
-    
+
     // Set redirect URL from environment variable
     fyers.setRedirectUrl(import.meta.env.VITE_FYERS_REDIRECT_URI);
-    
+
     // Get access token from cookies
     const accessToken = getStoredAccessToken();
-    
+
     if (!accessToken) {
-      throw new Error("Access token not found. Please login again.");
+      throw new Error('Access token not found. Please login again.');
     }
-    
+
     // Set access token
     fyers.setAccessToken(accessToken);
-    
+
     // Define input parameters for option chain
     const params = {
-      "symbol": symbol,
-      "strikecount": strikeCount,
-      "timestamp": timestamp
+      symbol: symbol,
+      strikecount: strikeCount,
+      timestamp: timestamp,
     };
-    
+
     // Fetch option chain data
     const response = await fyers.getOptionChain(params);
-    
+
     // Check for successful response
     if (response.s === 'ok' && response.code === 200 && response.data) {
       return response.data;
@@ -46,7 +50,7 @@ export const getOptionChainData = async (symbol, strikeCount = 5, timestamp = ""
       throw new Error(response.message || 'Failed to fetch option chain data');
     }
   } catch (error) {
-    console.error("Error fetching option chain:", error);
+    console.error('Error fetching option chain:', error);
     throw error;
   }
 };
@@ -64,7 +68,7 @@ export const getAvailableSymbols = async () => {
     { label: 'TCS', value: 'NSE:TCS-EQ' },
     { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
     { label: 'INFY', value: 'NSE:INFY-EQ' },
-    { label: 'SBIN', value: 'NSE:SBIN-EQ' }
+    { label: 'SBIN', value: 'NSE:SBIN-EQ' },
   ];
 };
 
@@ -78,49 +82,53 @@ export const formatOptionChainData = (data) => {
     return {
       underlying: null,
       expiryDates: [],
-      options: []
+      options: [],
     };
   }
 
   // Extract underlying asset data (usually the first item in optionsChain with strike_price -1)
-  const underlying = data.optionsChain.find(item => item.strike_price === -1) || null;
-  
+  const underlying =
+    data.optionsChain.find((item) => item.strike_price === -1) || null;
+
   // Extract expiry dates
-  const expiryDates = data.expiryData?.map(exp => ({
-    label: exp.date,
-    value: exp.expiry
-  })) || [];
-  
+  const expiryDates =
+    data.expiryData?.map((exp) => ({
+      label: exp.date,
+      value: exp.expiry,
+    })) || [];
+
   // Group options by strike price
   const optionsByStrike = {};
-  
-  data.optionsChain.forEach(item => {
+
+  data.optionsChain.forEach((item) => {
     // Skip the underlying asset
     if (item.strike_price === -1) return;
-    
+
     const strikePrice = item.strike_price;
-    
+
     if (!optionsByStrike[strikePrice]) {
       optionsByStrike[strikePrice] = {
         strikePrice,
         call: null,
-        put: null
+        put: null,
       };
     }
-    
+
     if (item.option_type === 'CE') {
       optionsByStrike[strikePrice].call = item;
     } else if (item.option_type === 'PE') {
       optionsByStrike[strikePrice].put = item;
     }
   });
-  
+
   // Convert to array and sort by strike price
-  const options = Object.values(optionsByStrike).sort((a, b) => a.strikePrice - b.strikePrice);
-  
+  const options = Object.values(optionsByStrike).sort(
+    (a, b) => a.strikePrice - b.strikePrice
+  );
+
   return {
     underlying,
     expiryDates,
-    options
+    options,
   };
 };

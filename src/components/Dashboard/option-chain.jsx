@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Table,
@@ -22,17 +22,17 @@ import {
   Grid,
   Divider,
   CircularProgress,
-} from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
+} from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   getOptionChainData,
   getAvailableSymbols,
   formatOptionChainData,
-} from "../../services/fyers-option-chain-service";
+} from '../../services/fyers-option-chain-service';
 
 const OptionChain = () => {
   // State for form controls
-  const [symbol, setSymbol] = useState("NSE:NIFTY50-INDEX");
+  const [symbol, setSymbol] = useState('NSE:NIFTY50-INDEX');
   const [strikeCount, setStrikeCount] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ const OptionChain = () => {
   // State for option chain data
   const [availableSymbols, setAvailableSymbols] = useState([]);
   const [expiryDates, setExpiryDates] = useState([]);
-  const [selectedExpiry, setSelectedExpiry] = useState("");
+  const [selectedExpiry, setSelectedExpiry] = useState('');
   const [optionChainData, setOptionChainData] = useState(null);
   const [underlying, setUnderlying] = useState(null);
   const [options, setOptions] = useState([]);
@@ -52,8 +52,8 @@ const OptionChain = () => {
         const symbols = await getAvailableSymbols();
         setAvailableSymbols(symbols);
       } catch (err) {
-        console.error("Error fetching symbols:", err);
-        setError("Failed to load available symbols");
+        console.error('Error fetching symbols:', err);
+        setError('Failed to load available symbols');
       }
     };
 
@@ -64,7 +64,7 @@ const OptionChain = () => {
   const fetchOptionChain = useCallback(async () => {
     try {
       const data = await getOptionChainData(symbol, strikeCount);
-      console.log("🚀 ~ fetchOptionChain ~ data:", data);
+      console.log('🚀 ~ fetchOptionChain ~ data:', data);
       const formatted = formatOptionChainData(data);
 
       setUnderlying(formatted.underlying);
@@ -77,8 +77,8 @@ const OptionChain = () => {
 
       setOptionChainData(data); // Store raw data
     } catch (err) {
-      console.error("Error fetching option chain:", err);
-      setError(err.message || "Failed to fetch option chain data");
+      console.error('Error fetching option chain:', err);
+      setError(err.message || 'Failed to fetch option chain data');
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ const OptionChain = () => {
 
   // Handle form input changes
   const handleSymbolChange = (event) => {
-    console.log("🚀 ~ handleSymbolChange ~ event:", event.target.value);
+    console.log('🚀 ~ handleSymbolChange ~ event:', event.target.value);
     setSymbol(event.target.value);
   };
 
@@ -120,8 +120,8 @@ const OptionChain = () => {
 
   // Format numbers for display
   const formatNumber = (num, decimals = 2) => {
-    if (num === null || num === undefined) return "-";
-    return num.toLocaleString("en-IN", {
+    if (num === null || num === undefined) return '-';
+    return num.toLocaleString('en-IN', {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     });
@@ -129,10 +129,10 @@ const OptionChain = () => {
 
   // Format percentage change for display with color
   const formatChange = (change) => {
-    if (change === null || change === undefined) return "-";
+    if (change === null || change === undefined) return '-';
 
-    const color = change >= 0 ? "success.main" : "error.main";
-    const prefix = change >= 0 ? "+" : "";
+    const color = change >= 0 ? 'success.main' : 'error.main';
+    const prefix = change >= 0 ? '+' : '';
 
     return (
       <Typography component="span" color={color} fontWeight="medium">
@@ -147,9 +147,9 @@ const OptionChain = () => {
       <Box
         sx={{
           mb: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         <Typography variant="h6">Options Chain</Typography>
@@ -211,9 +211,9 @@ const OptionChain = () => {
               max={20}
               step={1}
               marks={[
-                { value: 1, label: "1" },
-                { value: 10, label: "10" },
-                { value: 20, label: "20" },
+                { value: 1, label: '1' },
+                { value: 10, label: '10' },
+                { value: 20, label: '20' },
               ]}
               disabled={loading}
             />
@@ -223,7 +223,7 @@ const OptionChain = () => {
 
       {/* Underlying asset info */}
       {underlying && (
-        <Box sx={{ mb: 3, p: 2, borderRadius: 1, bgcolor: "background.paper" }}>
+        <Box sx={{ mb: 3, p: 2, borderRadius: 1, bgcolor: 'background.paper' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Typography variant="h6" color="primary">
@@ -236,8 +236,8 @@ const OptionChain = () => {
             <Grid item xs={12} md={6}>
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: { xs: "flex-start", md: "flex-end" },
+                  display: 'flex',
+                  justifyContent: { xs: 'flex-start', md: 'flex-end' },
                   gap: 3,
                 }}
               >
@@ -253,12 +253,12 @@ const OptionChain = () => {
                   <Typography variant="body2" color="text.secondary">
                     Change
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="h6">
                       {formatChange(underlying.ltpchp)}
                     </Typography>
                     <Typography variant="body2" sx={{ ml: 1 }}>
-                      ({underlying.ltpch > 0 ? "+" : ""}
+                      ({underlying.ltpch > 0 ? '+' : ''}
                       {formatNumber(underlying.ltpch)})
                     </Typography>
                   </Box>
@@ -278,7 +278,7 @@ const OptionChain = () => {
 
       {/* Loading indicator */}
       {loading && (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
           <CircularProgress />
         </Box>
       )}
@@ -292,21 +292,21 @@ const OptionChain = () => {
                 <TableCell
                   align="center"
                   colSpan={5}
-                  sx={{ bgcolor: "primary.light", color: "white" }}
+                  sx={{ bgcolor: 'primary.light', color: 'white' }}
                 >
                   CALLS
                 </TableCell>
                 <TableCell
                   align="center"
                   rowSpan={2}
-                  sx={{ bgcolor: "grey.300" }}
+                  sx={{ bgcolor: 'grey.300' }}
                 >
                   Strike Price
                 </TableCell>
                 <TableCell
                   align="center"
                   colSpan={5}
-                  sx={{ bgcolor: "primary.light", color: "white" }}
+                  sx={{ bgcolor: 'primary.light', color: 'white' }}
                 >
                   PUTS
                 </TableCell>
@@ -344,11 +344,11 @@ const OptionChain = () => {
                   <TableRow
                     key={row.strikePrice}
                     sx={{
-                      "&:nth-of-type(even)": {
-                        backgroundColor: "rgba(0, 0, 0, 0.02)",
+                      '&:nth-of-type(even)': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
                       },
                       ...(atmStrike
-                        ? { backgroundColor: "rgba(255, 236, 179, 0.4)" }
+                        ? { backgroundColor: 'rgba(255, 236, 179, 0.4)' }
                         : {}),
                     }}
                   >
@@ -357,62 +357,62 @@ const OptionChain = () => {
                       align="right"
                       sx={{
                         backgroundColor: callITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.call?.oi ? formatNumber(row.call.oi, 0) : "-"}
+                      {row.call?.oi ? formatNumber(row.call.oi, 0) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: callITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.call?.oichp ? formatChange(row.call.oichp) : "-"}
+                      {row.call?.oichp ? formatChange(row.call.oichp) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: callITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
                       {row.call?.volume
                         ? formatNumber(row.call.volume, 0)
-                        : "-"}
+                        : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: callITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
-                        fontWeight: "medium",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
+                        fontWeight: 'medium',
                       }}
                     >
-                      {row.call?.ltp ? formatNumber(row.call.ltp, 2) : "-"}
+                      {row.call?.ltp ? formatNumber(row.call.ltp, 2) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: callITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.call?.ltpchp ? formatChange(row.call.ltpchp) : "-"}
+                      {row.call?.ltpchp ? formatChange(row.call.ltpchp) : '-'}
                     </TableCell>
 
                     {/* Strike Price */}
                     <TableCell
                       align="center"
                       sx={{
-                        fontWeight: "bold",
-                        backgroundColor: "rgba(0, 0, 0, 0.08)",
+                        fontWeight: 'bold',
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)',
                       }}
                     >
                       {formatNumber(row.strikePrice, 0)}
@@ -423,52 +423,52 @@ const OptionChain = () => {
                       align="right"
                       sx={{
                         backgroundColor: putITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.put?.ltpchp ? formatChange(row.put.ltpchp) : "-"}
+                      {row.put?.ltpchp ? formatChange(row.put.ltpchp) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: putITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
-                        fontWeight: "medium",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
+                        fontWeight: 'medium',
                       }}
                     >
-                      {row.put?.ltp ? formatNumber(row.put.ltp, 2) : "-"}
+                      {row.put?.ltp ? formatNumber(row.put.ltp, 2) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: putITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.put?.volume ? formatNumber(row.put.volume, 0) : "-"}
+                      {row.put?.volume ? formatNumber(row.put.volume, 0) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: putITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.put?.oichp ? formatChange(row.put.oichp) : "-"}
+                      {row.put?.oichp ? formatChange(row.put.oichp) : '-'}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         backgroundColor: putITM
-                          ? "rgba(200, 230, 201, 0.3)"
-                          : "transparent",
+                          ? 'rgba(200, 230, 201, 0.3)'
+                          : 'transparent',
                       }}
                     >
-                      {row.put?.oi ? formatNumber(row.put.oi, 0) : "-"}
+                      {row.put?.oi ? formatNumber(row.put.oi, 0) : '-'}
                     </TableCell>
                   </TableRow>
                 );
@@ -480,7 +480,7 @@ const OptionChain = () => {
 
       {/* Empty state */}
       {!loading && options.length === 0 && !error && (
-        <Box sx={{ textAlign: "center", my: 4 }}>
+        <Box sx={{ textAlign: 'center', my: 4 }}>
           <Typography>
             No options data available. Please select a symbol and fetch data.
           </Typography>
@@ -489,7 +489,7 @@ const OptionChain = () => {
 
       {/* Summary */}
       {optionChainData && (
-        <Box sx={{ mt: 2, p: 2, borderRadius: 1, bgcolor: "background.paper" }}>
+        <Box sx={{ mt: 2, p: 2, borderRadius: 1, bgcolor: 'background.paper' }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="body2" color="text.secondary">
@@ -513,7 +513,7 @@ const OptionChain = () => {
                 <Typography variant="body2" color="text.secondary">
                   India VIX:
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography variant="body1" fontWeight="medium">
                     {formatNumber(optionChainData.indiavixData.ltp, 2)}
                   </Typography>
@@ -522,11 +522,11 @@ const OptionChain = () => {
                     sx={{ ml: 1 }}
                     color={
                       optionChainData.indiavixData.ltpchp >= 0
-                        ? "success.main"
-                        : "error.main"
+                        ? 'success.main'
+                        : 'error.main'
                     }
                   >
-                    ({optionChainData.indiavixData.ltpchp >= 0 ? "+" : ""}
+                    ({optionChainData.indiavixData.ltpchp >= 0 ? '+' : ''}
                     {formatNumber(optionChainData.indiavixData.ltpchp, 2)}%)
                   </Typography>
                 </Box>

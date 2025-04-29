@@ -1,6 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout, getStoredAccessToken } from '../services/fyers-auth-service';
+import {
+  isAuthenticated,
+  logout,
+  getStoredAccessToken,
+} from '../services/fyers-auth-service';
 
 // Create context
 const AuthContext = createContext();
@@ -16,7 +20,7 @@ export const AuthProvider = ({ children }) => {
       if (isAuthenticated()) {
         setUser({
           accessToken: getStoredAccessToken(),
-          isLoggedIn: true
+          isLoggedIn: true,
         });
       } else {
         setUser(null);
@@ -31,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   const updateUserAfterLogin = (accessToken) => {
     setUser({
       accessToken,
-      isLoggedIn: true
+      isLoggedIn: true,
     });
   };
 
@@ -48,14 +52,10 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: !!user?.isLoggedIn,
     loading,
     updateUserAfterLogin,
-    logout: handleLogout
+    logout: handleLogout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Custom hook to use auth context

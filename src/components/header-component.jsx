@@ -9,33 +9,31 @@ const Header = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'white' }}>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{ flexGrow: 1, textDecoration: 'none', color: 'white' }}
+        >
           Fyers Trading Platform
         </Typography>
         <Box>
           {isLoggedIn ? (
             <>
-              <Button 
-                color="inherit" 
-                component={RouterLink} 
+              <Button
+                color="inherit"
+                component={RouterLink}
                 to="/dashboard"
                 sx={{ mx: 1 }}
               >
                 Dashboard
               </Button>
-              <Button 
-                color="inherit" 
-                onClick={logout}
-              >
+              <Button color="inherit" onClick={logout}>
                 Logout
               </Button>
             </>
           ) : (
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/"
-            >
+            <Button color="inherit" component={RouterLink} to="/">
               Login
             </Button>
           )}

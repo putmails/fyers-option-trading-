@@ -18,7 +18,7 @@ import {
   Stack,
   Switch,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
 } from '@mui/material';
 // import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 // import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -39,24 +39,25 @@ const TradingForm = ({ selectedOption, underlying }) => {
   // Calculate order value
   const calculateOrderValue = () => {
     if (!selectedOption) return 0;
-    
-    const price = orderType === 'market' 
-      ? selectedOption.ltp 
-      : parseFloat(limitPrice) || selectedOption.ltp;
-    
+
+    const price =
+      orderType === 'market'
+        ? selectedOption.ltp
+        : parseFloat(limitPrice) || selectedOption.ltp;
+
     return price * quantity;
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // In a real app, this would call an API to place the order
     setStatus({
       success: true,
-      message: `${buySell === 'buy' ? 'Bought' : 'Sold'} ${quantity} ${selectedOption?.symbol || ''} at ${orderType === 'market' ? 'market price' : `₹${limitPrice}`}`
+      message: `${buySell === 'buy' ? 'Bought' : 'Sold'} ${quantity} ${selectedOption?.symbol || ''} at ${orderType === 'market' ? 'market price' : `₹${limitPrice}`}`,
     });
-    
+
     // Reset form after successful submission
     setTimeout(() => {
       setStatus(null);
@@ -85,19 +86,19 @@ const TradingForm = ({ selectedOption, underlying }) => {
 
   // Handle quantity increment/decrement
   const handleQuantityIncrement = (increment) => {
-    setQuantity(prev => Math.max(1, prev + increment));
+    setQuantity((prev) => Math.max(1, prev + increment));
   };
 
   return (
-    <Paper 
-      component="form" 
-      onSubmit={handleSubmit} 
+    <Paper
+      component="form"
+      onSubmit={handleSubmit}
       sx={{ p: 3, height: '100%' }}
     >
       <Typography variant="h6" gutterBottom>
         Place Order
       </Typography>
-      
+
       {!selectedOption ? (
         <Alert severity="info" sx={{ mt: 2 }}>
           Select an option from the chain to place an order
@@ -105,19 +106,18 @@ const TradingForm = ({ selectedOption, underlying }) => {
       ) : (
         <>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1">
-              {selectedOption.symbol}
-            </Typography>
+            <Typography variant="subtitle1">{selectedOption.symbol}</Typography>
             <Typography variant="body2" color="text.secondary">
-              Current Price: ₹{selectedOption.ltp?.toLocaleString('en-IN', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
+              Current Price: ₹
+              {selectedOption.ltp?.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </Typography>
           </Box>
-          
+
           <Divider sx={{ my: 2 }} />
-          
+
           {/* Buy/Sell Toggle */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -130,35 +130,35 @@ const TradingForm = ({ selectedOption, underlying }) => {
               aria-label="buy or sell"
               fullWidth
             >
-              <ToggleButton 
-                value="buy" 
+              <ToggleButton
+                value="buy"
                 aria-label="buy"
-                sx={{ 
+                sx={{
                   py: 1,
-                  '&.Mui-selected': { 
-                    backgroundColor: 'success.light', 
+                  '&.Mui-selected': {
+                    backgroundColor: 'success.light',
                     color: 'white',
                     '&:hover': {
                       backgroundColor: 'success.main',
-                    }
-                  } 
+                    },
+                  },
                 }}
               >
                 <CallMadeIcon sx={{ mr: 1 }} />
                 Buy
               </ToggleButton>
-              <ToggleButton 
-                value="sell" 
+              <ToggleButton
+                value="sell"
                 aria-label="sell"
-                sx={{ 
+                sx={{
                   py: 1,
-                  '&.Mui-selected': { 
-                    backgroundColor: 'error.light', 
+                  '&.Mui-selected': {
+                    backgroundColor: 'error.light',
                     color: 'white',
                     '&:hover': {
                       backgroundColor: 'error.main',
-                    }
-                  } 
+                    },
+                  },
                 }}
               >
                 <CallReceivedIcon sx={{ mr: 1 }} />
@@ -166,15 +166,15 @@ const TradingForm = ({ selectedOption, underlying }) => {
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
-          
+
           {/* Quantity */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               Quantity
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 size="small"
                 onClick={() => handleQuantityIncrement(-1)}
                 disabled={quantity <= 1}
@@ -190,8 +190,8 @@ const TradingForm = ({ selectedOption, underlying }) => {
                 inputProps={{ min: 1, style: { textAlign: 'center' } }}
                 sx={{ mx: 1, width: '100%' }}
               />
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 size="small"
                 onClick={() => handleQuantityIncrement(1)}
                 sx={{ minWidth: '36px' }}
@@ -200,7 +200,7 @@ const TradingForm = ({ selectedOption, underlying }) => {
               </Button>
             </Box>
           </Box>
-          
+
           {/* Order Type Selection */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -224,7 +224,7 @@ const TradingForm = ({ selectedOption, underlying }) => {
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
-          
+
           {/* Price fields based on order type */}
           {orderType === 'limit' && (
             <Box sx={{ mb: 3 }}>
@@ -237,12 +237,14 @@ const TradingForm = ({ selectedOption, underlying }) => {
                 value={limitPrice}
                 onChange={(e) => setLimitPrice(e.target.value)}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">₹</InputAdornment>
+                  ),
                 }}
               />
             </Box>
           )}
-          
+
           {orderType === 'sl' && (
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid item xs={6}>
@@ -255,7 +257,9 @@ const TradingForm = ({ selectedOption, underlying }) => {
                   value={triggerPrice}
                   onChange={(e) => setTriggerPrice(e.target.value)}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">₹</InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
@@ -269,15 +273,24 @@ const TradingForm = ({ selectedOption, underlying }) => {
                   value={limitPrice}
                   onChange={(e) => setLimitPrice(e.target.value)}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">₹</InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
             </Grid>
           )}
-          
+
           {/* Advanced Options */}
-          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              mb: 3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <Typography variant="body2">Advanced Options</Typography>
             <Switch
               checked={isAdvanced}
@@ -285,21 +298,29 @@ const TradingForm = ({ selectedOption, underlying }) => {
               inputProps={{ 'aria-label': 'Toggle advanced options' }}
             />
           </Box>
-          
+
           {isAdvanced && (
             <Box sx={{ mb: 3 }}>
               <FormControl component="fieldset" size="small">
                 <FormLabel component="legend">Order Validity</FormLabel>
                 <RadioGroup row defaultValue="day">
-                  <FormControlLabel value="day" control={<Radio size="small" />} label="Day" />
-                  <FormControlLabel value="ioc" control={<Radio size="small" />} label="IOC" />
+                  <FormControlLabel
+                    value="day"
+                    control={<Radio size="small" />}
+                    label="Day"
+                  />
+                  <FormControlLabel
+                    value="ioc"
+                    control={<Radio size="small" />}
+                    label="IOC"
+                  />
                 </RadioGroup>
               </FormControl>
             </Box>
           )}
-          
+
           <Divider sx={{ my: 2 }} />
-          
+
           {/* Order Summary */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="subtitle2" gutterBottom>
@@ -307,37 +328,46 @@ const TradingForm = ({ selectedOption, underlying }) => {
             </Typography>
             <Grid container spacing={1}>
               <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">Quantity:</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" align="right">{quantity}</Typography>
-              </Grid>
-              
-              <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">Price:</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Quantity:
+                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body2" align="right">
-                  {orderType === 'market' 
-                    ? 'Market Price' 
+                  {quantity}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Price:
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" align="right">
+                  {orderType === 'market'
+                    ? 'Market Price'
                     : `₹${limitPrice || selectedOption.ltp?.toFixed(2) || '0.00'}`}
                 </Typography>
               </Grid>
-              
+
               <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">Total Value:</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Value:
+                </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body1" align="right" fontWeight="bold">
-                  ₹{calculateOrderValue().toLocaleString('en-IN', { 
-                    minimumFractionDigits: 2, 
-                    maximumFractionDigits: 2 
+                  ₹
+                  {calculateOrderValue().toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                   })}
                 </Typography>
               </Grid>
             </Grid>
           </Box>
-          
+
           {/* Submit Button */}
           <Button
             type="submit"
@@ -349,11 +379,11 @@ const TradingForm = ({ selectedOption, underlying }) => {
           >
             {buySell === 'buy' ? 'Buy' : 'Sell'} {selectedOption.option_type}
           </Button>
-          
+
           {/* Status Message */}
           {status && (
-            <Alert 
-              severity={status.success ? "success" : "error"} 
+            <Alert
+              severity={status.success ? 'success' : 'error'}
               sx={{ mt: 2 }}
               onClose={() => setStatus(null)}
             >

@@ -29,17 +29,20 @@ A React application for options trading using the Fyers API. This platform provi
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/fyers-options-trading.git
    cd fyers-options-trading
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Create a `.env` file in the root directory with your Fyers API credentials:
+
    ```
    VITE_FYERS_APP_ID=your-fyers-app-id
    VITE_FYERS_SECRET_KEY=your-fyers-secret-key
@@ -47,6 +50,7 @@ A React application for options trading using the Fyers API. This platform provi
    ```
 
 4. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -74,3 +78,4 @@ src/
 │   ├── Home.jsx      # Landing page with login
 │   ├── AuthCallback.jsx # OAuth callback handler
 │   └── Dashboard.jsx # Main dashboar
+```

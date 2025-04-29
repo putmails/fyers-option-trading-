@@ -1,5 +1,5 @@
 // Import required modules
-import { fyersModel } from "fyers-web-sdk-v3";
+import { fyersModel } from 'fyers-web-sdk-v3';
 import Cookies from 'js-cookie';
 
 // Create a new instance of FyersAPI
@@ -9,7 +9,7 @@ const fyers = new fyersModel();
 const initFyers = () => {
   // Set your APPID obtained from Fyers
   fyers.setAppId(import.meta.env.VITE_FYERS_APP_ID);
-  
+
   // Set the RedirectURL where the authorization code will be sent
   fyers.setRedirectUrl(import.meta.env.VITE_FYERS_REDIRECT_URI);
 };
@@ -23,7 +23,10 @@ initFyers();
  */
 export const generateAuthCodeUrl = () => {
   const generateAuthcodeURL = fyers.generateAuthCode();
-  console.log("🚀 ~ generateAuthCodeUrl ~ generateAuthcodeURL:", generateAuthcodeURL);
+  console.log(
+    '🚀 ~ generateAuthCodeUrl ~ generateAuthcodeURL:',
+    generateAuthcodeURL
+  );
   return generateAuthcodeURL;
 };
 
@@ -39,18 +42,19 @@ export const getAccessToken = async (authCode, secretKey) => {
       secret_key: secretKey,
       auth_code: authCode,
     });
-    
-    
+
     if (response.s === 'ok' && response.access_token) {
       // Store the access token in cookies
       Cookies.set('fyersAccessToken', response.access_token, { expires: 1 }); // 1 day expiry
-      Cookies.set('fyersRefreshToken', response.refresh_token || '', { expires: 7 }); // 7 days expiry if available
+      Cookies.set('fyersRefreshToken', response.refresh_token || '', {
+        expires: 7,
+      }); // 7 days expiry if available
       return response;
     } else {
       throw new Error(response.message || 'Failed to get access token');
     }
   } catch (error) {
-    console.error("Error getting access token:", error);
+    console.error('Error getting access token:', error);
     throw error;
   }
 };

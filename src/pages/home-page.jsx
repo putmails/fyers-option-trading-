@@ -21,7 +21,12 @@ const Home = () => {
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           Welcome to Options Trading Platform
         </Typography>
-        <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          align="center"
+          color="text.secondary"
+          sx={{ mb: 4 }}
+        >
           Login with your Fyers account to access advanced trading tools
         </Typography>
 
@@ -29,8 +34,8 @@ const Home = () => {
 
         <Box sx={{ mt: 6 }}>
           <Typography variant="body2" align="center" color="text.secondary">
-            This platform provides options trading analysis and execution 
-            capabilities. Please ensure you understand the risks involved in 
+            This platform provides options trading analysis and execution
+            capabilities. Please ensure you understand the risks involved in
             options trading before proceeding.
           </Typography>
         </Box>
