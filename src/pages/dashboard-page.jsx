@@ -17,8 +17,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import OptionDetails from '../components/Dashboard/option-details';
-import OptionAnalysis from '../components/Dashboard/option-analysis';
-import TradingForm from '../components/Dashboard/trading-form';
 import Loader from '../components/common/loader-component';
 import { calculatePutCallRatio } from '../utils/options-helper';
 import OptionChain from '../components/Dashboard/OptionChain';

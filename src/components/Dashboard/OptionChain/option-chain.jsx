@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -7,6 +7,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { processOptionChain } from '../../utils/advancedOptionsAnalysis';
 
 // Import sub-components
 import {
@@ -29,6 +30,7 @@ import { formatNumber } from '../../../utils/common.utils';
 const OptionChain = React.memo(({ onOptionSelect }) => {
   const {
     fetchOptionChain,
+    optionChainData,
     selectedSymbol,
     error,
     isLoading,
@@ -44,6 +46,14 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     setSelectedRow,
     // optionChainData: { formattedData, data },
   } = useOptionStore();
+
+  // TODO: Get this data from the API
+  const [marketConditions, setMarketConditions] = useState({
+    volatilityIndex: 18.5, // Approximate VIX value for India
+    putCallRatio: 0.95, // Can be calculated from option chain
+    marketTrend: 'bullish', // Can be determined from technical indicators
+    liquidity: 'high', // Based on volume and open interest
+  });
 
   // Fetch data when component mounts or symbol changes
   useEffect(() => {
@@ -135,6 +145,14 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
       </Box>
     );
   }, []);
+
+  const enhancedOptionChain = useMemo(() => {
+    if (!optionChainData || !underlying || optionChainData.length === 0) {
+      return [];
+    }
+
+    return processOptionChain(optionChainData, underlying, marketConditions);
+  }, [optionChainData, underlying, marketConditions]);
 
   return (
     <Box sx={{ p: 2 }}>
