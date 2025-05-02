@@ -15,13 +15,14 @@ const initFyers = () => {
 };
 
 // Initialize on module load
-initFyers();
+
 
 /**
  * Generate the URL to initiate the OAuth2 authentication process
  * @returns {string} The authorization URL
  */
 export const generateAuthCodeUrl = () => {
+  initFyers();
   const generateAuthcodeURL = fyers.generateAuthCode();
   console.log(
     '🚀 ~ generateAuthCodeUrl ~ generateAuthcodeURL:',
@@ -38,6 +39,7 @@ export const generateAuthCodeUrl = () => {
  */
 export const getAccessToken = async (authCode, secretKey) => {
   try {
+    initFyers();
     const response = await fyers.generate_access_token({
       secret_key: secretKey,
       auth_code: authCode,

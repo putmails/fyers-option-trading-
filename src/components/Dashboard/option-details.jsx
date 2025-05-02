@@ -26,7 +26,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { calculateGreeks, calculateImpliedVolatility } from '../../utils/options-helper';
 import { analyzeOptionVolatility } from '../../utils/volatility-analysis';
 
-const OptionDetails = ({ option, underlying, expiryDate }) => {
+const OptionDetails = ({ option, underlying, expirtDate }) => {
   const [greeks, setGreeks] = useState(null);
   const [iv, setIv] = useState(null);
   const [pricingAnalysis, setPricingAnalysis] = useState(null);
@@ -35,7 +35,7 @@ const OptionDetails = ({ option, underlying, expiryDate }) => {
   
   // Calculate implied volatility and Greeks when option data changes
   useEffect(() => {
-    if (!option || !underlying || !option.option_type || !expiryDate) {
+    if (!option || !underlying || !option.option_type || !expirtDate) {
       return;
     }
     
@@ -43,7 +43,7 @@ const OptionDetails = ({ option, underlying, expiryDate }) => {
     const type = option.option_type === 'CE' ? 'call' : 'put';
     
     // Calculate days to expiry
-    const [day, month, year] = expiryDate.split('-').map(num => parseInt(num, 10));
+    const [day, month, year] = expirtDate.split('-').map(num => parseInt(num, 10));
     const expiryTime = new Date(year, month - 1, day).getTime();
     const currentTime = new Date().getTime();
     const daysToExpiry = Math.max(0, Math.ceil((expiryTime - currentTime) / (1000 * 60 * 60 * 24)));
@@ -155,7 +155,7 @@ const OptionDetails = ({ option, underlying, expiryDate }) => {
       }
     }
     
-  }, [option, underlying, expiryDate]);
+  }, [option, underlying, expirtDate, pricingAnalysis]);
   
   // If no option data, show a message
   if (!option || !underlying) {

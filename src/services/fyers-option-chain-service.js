@@ -42,7 +42,29 @@ export const getOptionChainData = async (
 
     // Fetch option chain data
     const response = await fyers.getOptionChain(params);
+    // const response = await new Promise((resolve) => {
+    //   console.log("########################################## API is triggering")
+    //     resolve({
+    //       s: 'ok',
+    //       code: 200,
+    //       data: {
+    //         optionsChain: [
+    //           { strike_price: -1, option_type: 'CE', ...params },
+    //           { strike_price: 1000, option_type: 'CE', ...params },
+    //           { strike_price: 1100, option_type: 'PE', ...params },
+    //           { strike_price: 1200, option_type: 'CE', ...params },
+    //           { strike_price: 1300, option_type: 'PE', ...params },
+    //         ],
+    //         expiryData: [
+    //           { date: '2023-10-26', expiry: '2023-10-26' },
+    //           { date: '2023-11-02', expiry: '2023-11-02' },
+    //         ],
+    //       },
+    //     });
+    // }
+    // );
 
+    console.log("🚀 ~ response:", response.s)
     // Check for successful response
     if (response.s === 'ok' && response.code === 200 && response.data) {
       return response.data;
@@ -64,11 +86,11 @@ export const getAvailableSymbols = async () => {
   // Here we're returning hardcoded values for demo purposes
   return [
     { label: 'NIFTY', value: 'NSE:NIFTY50-INDEX' },
-    { label: 'BANKNIFTY', value: 'NSE:BANKNIFTY-INDEX' },
-    { label: 'TCS', value: 'NSE:TCS-EQ' },
-    { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
-    { label: 'INFY', value: 'NSE:INFY-EQ' },
-    { label: 'SBIN', value: 'NSE:SBIN-EQ' },
+    { label: 'BANKNIFTY', value: 'NSE:NIFTYBANK-INDEX' },
+    // { label: 'TCS', value: 'NSE:TCS-EQ' },
+    // { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
+    // { label: 'INFY', value: 'NSE:INFY-EQ' },
+    // { label: 'SBIN', value: 'NSE:SBIN-EQ' },
   ];
 };
 

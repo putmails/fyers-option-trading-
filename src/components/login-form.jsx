@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Box,
   Button,
@@ -11,10 +11,10 @@ import {
 import { generateAuthCodeUrl } from '../services/fyers-auth-service';
 
 const LoginForm = () => {
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     const authUrl = generateAuthCodeUrl();
     window.location.href = authUrl;
-  };
+  },[]);
 
   return (
     <Container maxWidth="sm">
