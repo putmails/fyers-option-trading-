@@ -4,8 +4,17 @@ import {
   getOptionChainData,
 } from '../services/fyers-option-chain-service';
 import { availableSymbols } from '../utils/constant';
-import { calculateSupportResistance, calculateTheoreticalPrices, estimateImpliedVolatility, identifyTradingOpportunities } from '../utils/options-analysis';
+import {
+  calculateSupportResistance,
+  estimateImpliedVolatility,
+  identifyTradingOpportunities,
+} from '../utils/options-analysis';
 import { analyzeOptionVolatility } from '../utils/volatility-analysis';
+import {
+  calibrateHestonModel,
+} from '../utils/optionPricingModels/heston';
+import { calculateVolatilityMetrics } from '../utils/advancedOptionsAnalysis';
+import { calculateHybridPrice } from '../services/pricingService';
 
 // Define the store using Zustand's create function
 const useOptionStore = create((set, get) => ({
@@ -38,6 +47,13 @@ const useOptionStore = create((set, get) => ({
   strikeCount: 10,
   isLoading: false,
   error: null,
+  marketConditions: {
+    volatilityIndex: 18.5, // Approximate VIX value for India
+    putCallRatio: 0.95, // Will be calculated from option chain
+    marketTrend: 'bullish',
+    liquidity: 'high',
+  },
+  hestonParams: calibrateHestonModel([]), // This will return default parameters
 
   // Set selected symbol
   setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
@@ -93,18 +109,19 @@ const useOptionStore = create((set, get) => ({
       const formattedData = formatOptionChainData(data);
 
       if (formattedData && data) {
-
         // Sort options by strike price in ascending order
         const sortedOptions = [...formattedData.options].sort(
           (a, b) => a.strikePrice - b.strikePrice
         );
-        set({ underlying: formattedData.underlying, options: sortedOptions, expiryDates: formattedData.expiryDates });
-
+        set({
+          underlying: formattedData.underlying,
+          options: sortedOptions,
+          expiryDates: formattedData.expiryDates,
+        });
 
         if (formattedData.expiryDates.length > 0 && !get().selectedExpiry) {
           set({ selectedExpiry: formattedData.expiryDates[0].value });
         }
-
 
         // Pass data to parent component
         // if (onDataUpdate) {
@@ -115,6 +132,8 @@ const useOptionStore = create((set, get) => ({
         if (formattedData.underlying && formattedData.underlying.ltp) {
           const spotPrice = formattedData.underlying.ltp;
 
+          const volatilityMetrics = calculateVolatilityMetrics(data);
+
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
@@ -122,47 +141,45 @@ const useOptionStore = create((set, get) => ({
           );
           const estimatedHV = estimatedIV * 0.85;
 
-           // Estimate historical volatility (in a real app, this would come from market data)
+          // Estimate historical volatility (in a real app, this would come from market data)
           // For now, we'll simulate it as slightly lower than IV
-  // Calculate volatility skew
+          // Calculate volatility skew
           const skewAnalysis = {
             skewRatio: estimatedIV / estimatedHV,
             skewDifference: estimatedIV - estimatedHV,
             skewPercentage: ((estimatedIV - estimatedHV) / estimatedHV) * 100,
           };
 
-           // Calculate support/resistance levels
+          // Calculate support/resistance levels
           const levels = calculateSupportResistance(
             spotPrice,
             sortedOptions,
             estimatedIV
           );
 
+          
+
           set({
             volatilityData: {
               ...get().volatilityData,
               impliedVolatility: estimatedIV,
               historicalVolatility: estimatedHV,
-              volatilitySkew: skewAnalysis
-            },  
-            supportResistance: levels
-          })
+              volatilitySkew: skewAnalysis,
+            },
+            supportResistance: levels,
+            marketConditions: {
+              ...get().marketConditions,
+              putCallRatio: volatilityMetrics.putCallVolumeRatio,
+            },
+          });
 
-
-          // Get current expiry date in DD-MM-YYYY format
-          const expiryDate =
-            formattedData.expiryDates.length > 0
-              ? formattedData.expiryDates[0].label
-              : '';
-
-          // Calculate theoretical prices
-          const optionsWithTheoreticalPrices = calculateTheoreticalPrices(
-            sortedOptions,
-            spotPrice,
-            expiryDate,
-            estimatedIV
+          const optionsWithTheoreticalPrices = data.map((option) =>
+            calculateHybridPrice(option, formattedData.underlying,   {
+              ...get().marketConditions,
+              putCallRatio: volatilityMetrics.putCallVolumeRatio,
+            },)
           );
-
+          
           // Add volatility analysis to each option
           const optionsWithVolatilityAnalysis =
             optionsWithTheoreticalPrices.map((option) => {
@@ -216,17 +233,15 @@ const useOptionStore = create((set, get) => ({
 
           set({
             enhancedOptions: sortedEnhancedOptions,
-            tradingOpportunities: opportunities
-          })
-
-          
+            tradingOpportunities: opportunities,
+          });
         }
 
         // Reset selection
         set({
           selectedRow: null,
           setSelectedOptionType: null,
-        })
+        });
       }
 
       // Update store with fetched data

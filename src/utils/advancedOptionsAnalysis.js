@@ -18,7 +18,7 @@ import {
  * @param {Array} optionChain - Option chain data
  * @returns {object} - Put-call ratio and other volatility metrics
  */
-function calculateVolatilityMetrics(optionChain) {
+export function calculateVolatilityMetrics(optionChain) {
   let totalCallVolume = 0;
   let totalPutVolume = 0;
   let totalCallOI = 0;
