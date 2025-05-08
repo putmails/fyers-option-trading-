@@ -1,36 +1,52 @@
 import React from 'react';
-import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Paper } from '@mui/material';
-import OptionRow from './index';
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+} from '@mui/material';
+import { OptionRow } from './index';
 
 /**
  * Component displaying the option chain data table
  */
-const OptionsTable = ({ 
-  enhancedOptions, 
-  underlying, 
-  selectedRow, 
-  selectedOptionType, 
-  isSupportResistance, 
-  getOpportunityData, 
+const OptionsTable = ({
+  enhancedOptions,
+  underlying,
+  selectedRow,
+  selectedOptionType,
+  isSupportResistance,
+  getOpportunityData,
   handleOptionSelect,
   formatNumber,
   formatChange,
-  formatPriceDifference
+  formatPriceDifference,
 }) => {
   if (!enhancedOptions || enhancedOptions.length === 0) return null;
-  
+
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
       <Table stickyHeader size="small">
         <TableHead>
           <TableRow>
-            <TableCell align="center" colSpan={7} sx={{ bgcolor: 'primary.light', color: 'white' }}>
+            <TableCell
+              align="center"
+              colSpan={7}
+              sx={{ bgcolor: 'primary.light', color: 'white' }}
+            >
               CALLS
             </TableCell>
             <TableCell align="center" rowSpan={2} sx={{ bgcolor: 'grey.300' }}>
               Strike Price
             </TableCell>
-            <TableCell align="center" colSpan={7} sx={{ bgcolor: 'primary.light', color: 'white' }}>
+            <TableCell
+              align="center"
+              colSpan={7}
+              sx={{ bgcolor: 'primary.light', color: 'white' }}
+            >
               PUTS
             </TableCell>
           </TableRow>
@@ -43,7 +59,7 @@ const OptionsTable = ({
             <TableCell align="right">LTP</TableCell>
             <TableCell align="right">Theo.</TableCell>
             <TableCell align="right">Diff</TableCell>
-            
+
             {/* Put Headers */}
             <TableCell align="right">Diff</TableCell>
             <TableCell align="right">Theo.</TableCell>
@@ -57,14 +73,20 @@ const OptionsTable = ({
         <TableBody>
           {enhancedOptions.map((row) => {
             // Check if this strike is a support or resistance level
-            const { isSupport, isResistance } = isSupportResistance(row.strikePrice);
-            
+            const { isSupport, isResistance } = isSupportResistance(
+              row.strikePrice
+            );
+
             // Get trading opportunities
-            const callOpportunity = row.call ? getOpportunityData(row.strikePrice, 'call') : null;
-            const putOpportunity = row.put ? getOpportunityData(row.strikePrice, 'put') : null;
-            
+            const callOpportunity = row.call
+              ? getOpportunityData(row.strikePrice, 'call')
+              : null;
+            const putOpportunity = row.put
+              ? getOpportunityData(row.strikePrice, 'put')
+              : null;
+
             return (
-              <OptionRow 
+              <OptionRow
                 key={row.strikePrice}
                 row={row}
                 underlying={underlying}

@@ -179,7 +179,7 @@ const useOptionStore = create((set, get) => ({
             },
           });
 
-          const optionsWithTheoreticalPrices = sortedOptions.slice(0,2).map((option) =>
+          const optionsWithTheoreticalPrices = sortedOptions.map((option) =>
             calculateOptionCallPutPrice(option, formattedData.underlying,   {
               ...get().marketConditions,
               putCallRatio: volatilityMetrics.putCallVolumeRatio,

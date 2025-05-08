@@ -174,15 +174,16 @@ export function calculateOptionCallPutPrice(
   expiry
 ) {
   const result = {
+    ...option,
     call: {
       ...option.call,
     },
     put: {
       ...option.put,
     },
-    strikePrice: option.strikePrice,
+    // strikePrice: option.strikePrice,
   };
-  result.call = calculateHybridPrice({
+  const callHybridPrice = calculateHybridPrice({
     strikePrice: option.strikePrice,
     ltp: option.call.ltp,
     underlyingData,
@@ -190,7 +191,7 @@ export function calculateOptionCallPutPrice(
     expiry,
     type: 'call',
   });
-  result.put = calculateHybridPrice({
+  const putHybridPrice = calculateHybridPrice({
     strikePrice: option.strikePrice,
     ltp: option.put.ltp,
     underlyingData,
@@ -198,7 +199,16 @@ export function calculateOptionCallPutPrice(
     expiry,
     type: 'put',
   });
-  return result;
+  return {...result,
+    call: {
+      ...result.call,
+      ...callHybridPrice,
+    },
+    put: {
+      ...result.put,
+      ...putHybridPrice,
+    },
+  };
 }
 
 /**

@@ -22,6 +22,7 @@ import {
 
 import useOptionStore from '../../../store/option-store';
 import { formatNumber } from '../../../utils/common.utils';
+import { ChangeFormat } from './format-change';
 
 /**
  * Main component for option chain analysis
@@ -181,7 +182,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
       )}
 
       {/* Option chain table */}
-      {/* {!isLoading && enhancedOptions.length > 0 ? (
+      {!isLoading && enhancedOptions.length > 0 ? (
         <OptionsTable
           enhancedOptions={enhancedOptions}
           underlying={underlying}
@@ -191,6 +192,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
           getOpportunityData={getOpportunityData}
           handleOptionSelect={handleOptionSelect}
           formatNumber={formatNumber}
+          formatChange={ChangeFormat}
           formatPriceDifference={formatPriceDifference}
         />
       ) : !isLoading && !error ? (
@@ -199,7 +201,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
             No options data available. Please select a symbol and fetch data.
           </Typography>
         </Box>
-      ) : null} */}
+      ) : null}
 
       {/* Legend */}
       <Legend />
