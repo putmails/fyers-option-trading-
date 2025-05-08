@@ -3,15 +3,22 @@
  * Integrates multiple pricing models for accurate option pricing
  */
 
-import { calculateCallPrice, calculatePutPrice, calculateGreeks } from '../utils/optionPricingModels/blackScholes';
-import { calculateHestonPrice, calibrateHestonModel } from '../utils/optionPricingModels/heston';
+import { RISK_FREE_INTEREST } from '../utils/constant';
+import {
+  calculateCallPrice,
+  calculatePutPrice,
+  calculateGreeks,
+} from '../utils/optionPricingModels/blackScholes';
+import {
+  calculateHestonPrice,
+  calibrateHestonModel,
+} from '../utils/optionPricingModels/heston';
 import { getNeuralNetworkCorrection } from '../utils/optionPricingModels/neuralNetwork';
-import { 
-  calculateImpliedVolatility, 
-  calculateMoneyness, 
-  calculateDaysToExpiry, 
+import {
+  calculateImpliedVolatility,
+  calculateMoneyness,
+  calculateDaysToExpiry,
   daysToYears,
-  getOptionType 
 } from '../utils/optionPricingUtils';
 
 /**
@@ -24,18 +31,18 @@ function determineModelWeights(optionCharacteristics, marketConditions) {
   // eslint-disable-next-line no-unused-vars
   const { moneyness, daysToExpiry, impliedVolatility } = optionCharacteristics;
   const { volatilityIndex } = marketConditions;
-  
+
   // Initialize default weights
   let bsWeight = 0.5;
   let hestonWeight = 0.5;
-  
+
   // Adjust weights based on moneyness
   if (moneyness < 0.95 || moneyness > 1.05) {
     // Deep ITM or OTM: favor Heston
     bsWeight -= 0.2;
     hestonWeight += 0.2;
   }
-  
+
   // Adjust weights based on time to expiry
   if (daysToExpiry < 7) {
     // Very short term: favor Black-Scholes
@@ -46,22 +53,22 @@ function determineModelWeights(optionCharacteristics, marketConditions) {
     bsWeight -= 0.2;
     hestonWeight += 0.2;
   }
-  
+
   // Adjust weights based on market volatility
   if (volatilityIndex > 20) {
     // High volatility: favor Heston
     bsWeight -= 0.1;
     hestonWeight += 0.1;
   }
-  
+
   // Normalize weights to ensure they sum to 1
   const totalWeight = bsWeight + hestonWeight;
   bsWeight = bsWeight / totalWeight;
   hestonWeight = hestonWeight / totalWeight;
-  
+
   return {
     blackScholes: bsWeight,
-    heston: hestonWeight
+    heston: hestonWeight,
   };
 }
 
@@ -72,70 +79,79 @@ function determineModelWeights(optionCharacteristics, marketConditions) {
  * @param {object} marketConditions - Current market conditions
  * @returns {object} - Pricing results
  */
-function calculateHybridPrice(option, underlyingData, marketConditions) {
+function calculateHybridPrice({
+  strikePrice,
+  ltp,
+  underlyingData,
+  marketConditions,
+  expiry,
+  type,
+}) {
   // Extract option parameters
-  const S = underlyingData.price;
-  const K = option.strike;
-  const daysToExpiry = calculateDaysToExpiry(option.expiry);
+  const S = underlyingData.ltp;
+  const K = strikePrice;
+  const daysToExpiry = calculateDaysToExpiry(expiry);
   const T = daysToYears(daysToExpiry);
-  const type = getOptionType(option.symbol);
-  
+
   // Use a reasonable risk-free rate for India
-  const r = 0.06; // 6% annual rate
-  
+  const r = RISK_FREE_INTEREST ?? 0.065; // 6.5% annual rate
+
   // Calculate moneyness
   const moneyness = calculateMoneyness(S, K);
-  
+
   // Calculate implied volatility from market price (if available)
   let impliedVolatility = 0.3; // Default assumption
-  if (option.lastPrice) {
-    impliedVolatility = calculateImpliedVolatility(
-      option.lastPrice, S, K, T, r, type
-    );
+  
+  if (ltp) {
+    impliedVolatility = calculateImpliedVolatility(ltp, S, K, T, r, type);
   }
-  
+
   // Calculate Black-Scholes price
-  const bsPrice = type === 'call' 
-    ? calculateCallPrice(S, K, T, r, impliedVolatility)
-    : calculatePutPrice(S, K, T, r, impliedVolatility);
-  
+  const bsPrice =
+    type === 'call'
+      ? calculateCallPrice(S, K, T, r, impliedVolatility)
+      : calculatePutPrice(S, K, T, r, impliedVolatility);
+
   // Calculate Heston model price
   const hestonParams = calibrateHestonModel([]);
   const hestonPrice = calculateHestonPrice(
-    S, K, T, r, 
-    hestonParams.v0, 
-    hestonParams.kappa, 
-    hestonParams.theta, 
-    hestonParams.sigma, 
-    hestonParams.rho, 
+    S,
+    K,
+    T,
+    r,
+    hestonParams.v0,
+    hestonParams.kappa,
+    hestonParams.theta,
+    hestonParams.sigma,
+    hestonParams.rho,
     type
   );
-  
+
   // Get neural network correction factor
   const nnCorrection = getNeuralNetworkCorrection(
     { moneyness, timeToExpiry: T },
     { impliedVolatility, ...marketConditions }
   );
-  
+
   // Determine model weights based on option characteristics
   const weights = determineModelWeights(
     { moneyness, daysToExpiry, impliedVolatility },
     marketConditions
   );
-  
+
   // Calculate final hybrid price
-  const hybridPrice = (
-    weights.blackScholes * bsPrice +
-    weights.heston * hestonPrice
-  ) * (1 + nnCorrection);
-  
+  const hybridPrice =
+    (weights.blackScholes * bsPrice + weights.heston * hestonPrice) *
+    (1 + nnCorrection);
+
   // Calculate greeks for the hybrid model
   // For simplicity, we're using Black-Scholes greeks as a base
   const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
-  
+
   // Return comprehensive pricing results
   return {
-    option,
+    type,
+    ltp,
     underlyingPrice: S,
     daysToExpiry,
     timeToExpiryYears: T,
@@ -143,17 +159,51 @@ function calculateHybridPrice(option, underlyingData, marketConditions) {
     models: {
       blackScholes: { price: bsPrice, weight: weights.blackScholes },
       heston: { price: hestonPrice, weight: weights.heston },
-      neuralCorrection: nnCorrection
+      neuralCorrection: nnCorrection,
     },
     hybridPrice,
     greeks,
-    pricingDate: new Date()
+    pricingDate: new Date(),
   };
+}
+
+export function calculateOptionCallPutPrice(
+  option,
+  underlyingData,
+  marketConditions,
+  expiry
+) {
+  const result = {
+    call: {
+      ...option.call,
+    },
+    put: {
+      ...option.put,
+    },
+    strikePrice: option.strikePrice,
+  };
+  result.call = calculateHybridPrice({
+    strikePrice: option.strikePrice,
+    ltp: option.call.ltp,
+    underlyingData,
+    marketConditions,
+    expiry,
+    type: 'call',
+  });
+  result.put = calculateHybridPrice({
+    strikePrice: option.strikePrice,
+    ltp: option.put.ltp,
+    underlyingData,
+    marketConditions,
+    expiry,
+    type: 'put',
+  });
+  return result;
 }
 
 /**
  * Price an entire option chain using the hybrid approach
- * @param {Array} optionChain - Array of option data 
+ * @param {Array} optionChain - Array of option data
  * @param {object} underlyingData - Underlying asset data
  * @param {object} marketConditions - Current market conditions
  * @returns {Array} - Priced option chain
@@ -161,12 +211,16 @@ function calculateHybridPrice(option, underlyingData, marketConditions) {
 function priceOptionChain(optionChain, underlyingData, marketConditions) {
   // Price each option in the chain
   const pricedOptions = [];
-  
+
   for (const option of optionChain) {
-    const pricingResult = calculateHybridPrice(option, underlyingData, marketConditions);
+    const pricingResult = calculateHybridPrice(
+      option,
+      underlyingData,
+      marketConditions
+    );
     pricedOptions.push(pricingResult);
   }
-  
+
   return pricedOptions;
 }
 
@@ -180,10 +234,10 @@ function getPriceDifference(option, theoreticalPrice) {
   if (!option.lastPrice) {
     return { absolute: 0, percentage: 0 };
   }
-  
+
   const absolute = option.lastPrice - theoreticalPrice;
   const percentage = (absolute / theoreticalPrice) * 100;
-  
+
   return { absolute, percentage };
 }
 
@@ -194,7 +248,7 @@ function getPriceDifference(option, theoreticalPrice) {
  */
 function getTradingSignal(priceDifference) {
   const { percentage } = priceDifference;
-  
+
   if (percentage > 10) {
     return { signal: 'SELL', strength: 'Strong', confidence: 0.8 };
   } else if (percentage > 5) {
@@ -204,7 +258,7 @@ function getTradingSignal(priceDifference) {
   } else if (percentage < -5) {
     return { signal: 'BUY', strength: 'Moderate', confidence: 0.6 };
   }
-  
+
   return { signal: 'HOLD', strength: 'Neutral', confidence: 0.5 };
 }
 
@@ -212,5 +266,5 @@ export {
   calculateHybridPrice,
   priceOptionChain,
   getPriceDifference,
-  getTradingSignal
+  getTradingSignal,
 };

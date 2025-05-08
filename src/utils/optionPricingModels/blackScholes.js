@@ -38,7 +38,8 @@ function normalCDF(x) {
  */
 function calculateCallPrice(S, K, T, r, sigma) {
   // Check for invalid inputs
-  if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
+  if (S <= 0 || K <= 0 || sigma <= 0) {
+  // if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
     console.error('Invalid input parameters for Black-Scholes model');
     return null;
   }
@@ -62,7 +63,8 @@ function calculateCallPrice(S, K, T, r, sigma) {
  */
 function calculatePutPrice(S, K, T, r, sigma) {
   // Check for invalid inputs
-  if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
+  if (S <= 0 || K <= 0 || sigma <= 0) {
+  // if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
     console.error('Invalid input parameters for Black-Scholes model');
     return null;
   }
@@ -87,7 +89,8 @@ function calculatePutPrice(S, K, T, r, sigma) {
  */
 function calculateGreeks(S, K, T, r, sigma, type) {
   // Check for invalid inputs
-  if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
+  if (S <= 0 || K <= 0 || sigma <= 0) {
+  // if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
     console.error('Invalid input parameters for calculating Greeks');
     return null;
   }

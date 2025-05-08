@@ -181,7 +181,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
       )}
 
       {/* Option chain table */}
-      {!isLoading && enhancedOptions.length > 0 ? (
+      {/* {!isLoading && enhancedOptions.length > 0 ? (
         <OptionsTable
           enhancedOptions={enhancedOptions}
           underlying={underlying}
@@ -199,7 +199,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
             No options data available. Please select a symbol and fetch data.
           </Typography>
         </Box>
-      ) : null}
+      ) : null} */}
 
       {/* Legend */}
       <Legend />

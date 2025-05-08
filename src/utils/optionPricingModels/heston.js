@@ -22,7 +22,8 @@ import { calculateCallPrice as bsCallPrice, calculatePutPrice as bsPutPrice } fr
  */
 function calculateHestonPrice(S, K, T, r, v0, kappa, theta, sigma, rho, type) {
   // Check for invalid inputs
-  if (S <= 0 || K <= 0 || T <= 0 || v0 <= 0 || kappa <= 0 || theta <= 0 || sigma <= 0) {
+  if (S <= 0 || K <= 0 || v0 <= 0 || kappa <= 0 || theta <= 0 || sigma <= 0) {
+  // if (S <= 0 || K <= 0 || T <= 0 || v0 <= 0 || kappa <= 0 || theta <= 0 || sigma <= 0) {
     console.error('Invalid input parameters for Heston model');
     return null;
   }

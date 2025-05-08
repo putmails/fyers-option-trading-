@@ -15,7 +15,7 @@ import {
   calibrateHestonModel,
 } from '../utils/optionPricingModels/heston';
 import { calculateVolatilityMetrics } from '../utils/advancedOptionsAnalysis';
-import { calculateHybridPrice } from '../services/pricingService';
+import {  calculateOptionCallPutPrice } from '../services/pricingService';
 
 // Define the store using Zustand's create function
 const useOptionStore = create((set, get) => ({
@@ -106,9 +106,9 @@ const useOptionStore = create((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const closes = fetchHistoricalCloses(symbol, PERIOD_DAYS);
       const rawData = await getOptionChainData(symbol, 10);
       const formattedData = formatOptionChainData(rawData);
+      const closes = await fetchHistoricalCloses(symbol, PERIOD_DAYS);
       console.log("🚀 ~ fetchOptionChain: ~ formattedData:", formattedData)
 
       if (formattedData && rawData) {
@@ -126,10 +126,6 @@ const useOptionStore = create((set, get) => ({
           set({ selectedExpiry: formattedData.expiryDates[0].value }); // TODO: Expiry date label and value can be mismatched.
         }
 
-        // Pass data to parent component
-        // if (onDataUpdate) {
-        //   onDataUpdate(data);
-        // }
 
         // Calculate support and resistance levels
         if (formattedData.underlying && formattedData.underlying.ltp) {
@@ -137,17 +133,19 @@ const useOptionStore = create((set, get) => ({
 
           const volatilityMetrics = calculateVolatilityMetrics(sortedOptions);
 
+          const expiry = get().selectedExpiry || formattedData.expiryDates[0].value
+          console.log("🚀 ~ fetchOptionChain: ~ expiry:", expiry)
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
             spotPrice,
-            !get().selectedExpiry || formattedData.expiryDates[0].value
+            expiry
           );
           const closesDataForHV = await closes;
-          console.log("🚀 ~ fetchOptionChain: ~ closesDataForHV:", closesDataForHV)
+          // console.log("🚀 ~ fetchOptionChain: ~ closesDataForHV:", closesDataForHV)
 
           const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
-          console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
+          // console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
           // Estimate historical volatility (in a real app, this would come from market data)
           // For now, we'll simulate it as slightly lower than IV
@@ -181,12 +179,13 @@ const useOptionStore = create((set, get) => ({
             },
           });
 
-          const optionsWithTheoreticalPrices = rawData.map((option) =>
-            calculateHybridPrice(option, formattedData.underlying,   {
+          const optionsWithTheoreticalPrices = sortedOptions.slice(0,2).map((option) =>
+            calculateOptionCallPutPrice(option, formattedData.underlying,   {
               ...get().marketConditions,
               putCallRatio: volatilityMetrics.putCallVolumeRatio,
-            },)
+            }, expiry)
           );
+          console.log("🚀 ~ fetchOptionChain: ~ optionsWithTheoreticalPrices:", optionsWithTheoreticalPrices)
           
           // Add volatility analysis to each option
           const optionsWithVolatilityAnalysis =
@@ -201,7 +200,8 @@ const useOptionStore = create((set, get) => ({
                     theoreticalPrice: option.call.theoreticalPrice,
                     greeks: option.call.greeks,
                   },
-                  formattedData.underlying
+                  formattedData.underlying,
+                  estimatedHV
                 );
 
                 enhancedOption.call = {
@@ -218,7 +218,8 @@ const useOptionStore = create((set, get) => ({
                     theoreticalPrice: option.put.theoreticalPrice,
                     greeks: option.put.greeks,
                   },
-                  formattedData.underlying
+                  formattedData.underlying,
+                  estimatedHV
                 );
 
                 enhancedOption.put = {
@@ -234,6 +235,7 @@ const useOptionStore = create((set, get) => ({
           const sortedEnhancedOptions = [...optionsWithVolatilityAnalysis].sort(
             (a, b) => a.strikePrice - b.strikePrice
           );
+          console.log("🚀 ~ fetchOptionChain: ~ sortedEnhancedOptions:", sortedEnhancedOptions)
           // Identify trading opportunities
           const opportunities = identifyTradingOpportunities(
             sortedEnhancedOptions

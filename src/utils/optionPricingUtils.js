@@ -42,16 +42,56 @@ export function calculateMoneyness(S, K) {
  */
 export function calculateDaysToExpiry(expiryDate) {
   const currentDate = new Date();
-  const expiry = new Date(expiryDate);
+  
+  // Initialize expiry date
+  let expiry;
+  
+  // Check if expiryDate is a number or string
+  if (typeof expiryDate === 'number' || (typeof expiryDate === 'string' && /^\d+$/.test(expiryDate))) {
+    // Convert to number if it's a numeric string
+    const timestamp = typeof expiryDate === 'string' ? parseInt(expiryDate) : expiryDate;
+    
+    // Check if it's likely a Unix timestamp (seconds) or JavaScript timestamp (milliseconds)
+    if (timestamp < 10000000000) {
+      // It's a Unix timestamp (seconds)
+      expiry = new Date(timestamp * 1000);
+    } else {
+      // It's already in milliseconds
+      expiry = new Date(timestamp);
+    }
+  } else {
+    // Handle as regular date string
+    expiry = new Date(expiryDate);
+  }
+  
+  // Calculate time difference
   const timeDiff = expiry.getTime() - currentDate.getTime();
-  return Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+  
+  // Convert to days
+  const rawDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  // If it's expiry day (0 days), return a small positive value
+  // This ensures consistency with our daysToYears modification
+  if (rawDays === 0 && timeDiff > 0) {
+    // Return a value that represents part of a day if there are still some hours left
+    // Calculate the fraction of a day remaining
+    const hoursRemaining = timeDiff / (1000 * 3600);
+    return Math.max(hoursRemaining / 24, 0.01); // At least 0.01 days (about 14 minutes)
+  }
+  
+  // If it's already expired, return 0
+  if (timeDiff <= 0) {
+    return 0;
+  }
+  
+  return rawDays;
 }
 
 /**
  * Convert days to expiration to years
  */
 export function daysToYears(days) {
-  return days / 365;
+  return Math.max(days / 365, 0.00001);
 }
 
 /**

@@ -32,7 +32,7 @@ export const calculateHistoricalVolatility = (priceHistory, period = PERIOD_DAYS
   const variance = returns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (returns.length - 1);
 
   const annualizedVolatility = Math.sqrt(variance * 252);
-  console.log("🚀 ~ calculateHistoricalVolatility ~ annualizedVolatility:", annualizedVolatility)
+  // console.log("🚀 ~ calculateHistoricalVolatility ~ annualizedVolatility:", annualizedVolatility)
   return annualizedVolatility;
 };
 
