@@ -19,19 +19,17 @@ import {
  * @returns {object} - Put-call ratio and other volatility metrics
  */
 export function calculateVolatilityMetrics(optionChain) {
+  console.log("🚀 ~ calculateVolatilityMetrics ~ optionChain:", optionChain)
   let totalCallVolume = 0;
   let totalPutVolume = 0;
   let totalCallOI = 0;
   let totalPutOI = 0;
   
   optionChain.forEach(option => {
-    if (option.type === 'CE') {
-      totalCallVolume += option.volume || 0;
-      totalCallOI += option.openInterest || 0;
-    } else if (option.type === 'PE') {
-      totalPutVolume += option.volume || 0;
-      totalPutOI += option.openInterest || 0;
-    }
+      totalCallVolume += option.call.volume || 0;
+      totalCallOI += option.call.oi || 0;
+      totalPutVolume += option.put.volume || 0;
+      totalPutOI += option.put.oi || 0;
   });
   
   const putCallVolumeRatio = totalPutVolume / totalCallVolume;

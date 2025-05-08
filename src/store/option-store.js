@@ -1,15 +1,16 @@
 import { create } from 'zustand';
 import {
+  fetchHistoricalCloses,
   formatOptionChainData,
   getOptionChainData,
 } from '../services/fyers-option-chain-service';
-import { availableSymbols } from '../utils/constant';
+import { availableSymbols, PERIOD_DAYS } from '../utils/constant';
 import {
   calculateSupportResistance,
   estimateImpliedVolatility,
   identifyTradingOpportunities,
 } from '../utils/options-analysis';
-import { analyzeOptionVolatility } from '../utils/volatility-analysis';
+import { analyzeOptionVolatility, calculateHistoricalVolatility } from '../utils/volatility-analysis';
 import {
   calibrateHestonModel,
 } from '../utils/optionPricingModels/heston';
@@ -105,10 +106,12 @@ const useOptionStore = create((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const data = await getOptionChainData(symbol, 10);
-      const formattedData = formatOptionChainData(data);
+      const closes = fetchHistoricalCloses(symbol, PERIOD_DAYS);
+      const rawData = await getOptionChainData(symbol, 10);
+      const formattedData = formatOptionChainData(rawData);
+      console.log("🚀 ~ fetchOptionChain: ~ formattedData:", formattedData)
 
-      if (formattedData && data) {
+      if (formattedData && rawData) {
         // Sort options by strike price in ascending order
         const sortedOptions = [...formattedData.options].sort(
           (a, b) => a.strikePrice - b.strikePrice
@@ -120,7 +123,7 @@ const useOptionStore = create((set, get) => ({
         });
 
         if (formattedData.expiryDates.length > 0 && !get().selectedExpiry) {
-          set({ selectedExpiry: formattedData.expiryDates[0].value });
+          set({ selectedExpiry: formattedData.expiryDates[0].value }); // TODO: Expiry date label and value can be mismatched.
         }
 
         // Pass data to parent component
@@ -132,14 +135,19 @@ const useOptionStore = create((set, get) => ({
         if (formattedData.underlying && formattedData.underlying.ltp) {
           const spotPrice = formattedData.underlying.ltp;
 
-          const volatilityMetrics = calculateVolatilityMetrics(data);
+          const volatilityMetrics = calculateVolatilityMetrics(sortedOptions);
 
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
-            spotPrice
+            spotPrice,
+            !get().selectedExpiry || formattedData.expiryDates[0].value
           );
-          const estimatedHV = estimatedIV * 0.85;
+          const closesDataForHV = await closes;
+          console.log("🚀 ~ fetchOptionChain: ~ closesDataForHV:", closesDataForHV)
+
+          const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
+          console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
           // Estimate historical volatility (in a real app, this would come from market data)
           // For now, we'll simulate it as slightly lower than IV
@@ -173,7 +181,7 @@ const useOptionStore = create((set, get) => ({
             },
           });
 
-          const optionsWithTheoreticalPrices = data.map((option) =>
+          const optionsWithTheoreticalPrices = rawData.map((option) =>
             calculateHybridPrice(option, formattedData.underlying,   {
               ...get().marketConditions,
               putCallRatio: volatilityMetrics.putCallVolumeRatio,
@@ -249,7 +257,7 @@ const useOptionStore = create((set, get) => ({
         ...state,
         optionChainData: {
           formattedData: formattedData,
-          data: data,
+          data: rawData,
         },
         selectedSymbol: symbol,
         isLoading: false,

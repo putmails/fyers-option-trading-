@@ -71,7 +71,7 @@ export const calculateSupportResistance = (spotPrice, optionsData, volatility = 
  * @param {number} spotPrice - Current price of the underlying
  * @returns {number} Implied volatility estimate
  */
-export const estimateImpliedVolatility = (optionsData, spotPrice) => {
+export const estimateImpliedVolatility = (optionsData, spotPrice, expiryInSeconds) => {
   if (!optionsData || !optionsData.length || !spotPrice) {
     return 0.3; // Default value if calculation isn't possible
   }
@@ -80,6 +80,8 @@ export const estimateImpliedVolatility = (optionsData, spotPrice) => {
   optionsData.sort((a, b) => Math.abs(a.strikePrice - spotPrice) - Math.abs(b.strikePrice - spotPrice));
   
   const atmOption = optionsData[0];
+  console.log("🚀 ~ estimateImpliedVolatility ~ spotPrice:", spotPrice)
+  console.log("🚀 ~ estimateImpliedVolatility ~ atmOption:", atmOption)
   
   if (!atmOption || (!atmOption.call && !atmOption.put)) {
     return 0.3;
@@ -96,13 +98,15 @@ export const estimateImpliedVolatility = (optionsData, spotPrice) => {
       atmOption.call.ltp,
       spotPrice,
       atmOption.strikePrice,
-      30/365 // Assuming 30 days to expiry
+      getTimeToExpiry(expiryInSeconds) // TODO: Take the expiry from selection // Assuming 30 days to expiry
     );
     
     if (callIV > 0) {
       totalIV += callIV;
       count++;
     }
+    console.log("🚀 ~ estimateImpliedVolatility ~ callIV:", callIV)
+    console.log("🚀 ~ estimateImpliedVolatility ~ totalIV:", totalIV)
   }
   
   if (atmOption.put) {
@@ -112,22 +116,34 @@ export const estimateImpliedVolatility = (optionsData, spotPrice) => {
       atmOption.put.ltp,
       spotPrice,
       atmOption.strikePrice,
-      30/365 // Assuming 30 days to expiry
+      getTimeToExpiry(expiryInSeconds) // Assuming 30 days to expiry
     );
     
     if (putIV > 0) {
       totalIV += putIV;
       count++;
     }
+    console.log("🚀 ~ estimateImpliedVolatility ~ putIV:", putIV)
+    console.log("🚀 ~ estimateImpliedVolatility ~ totalIV:", totalIV / count)
   }
   
   return count > 0 ? totalIV / count : 0.3;
 };
 
+const getTimeToExpiry = (expirySeconds) => { 
+const currentTimeMs = Date.now(); // Current time in milliseconds
+    const expiryTimeMs = Number(expirySeconds) * 1000; // Convert seconds to ms
+    const timeDiffMs = expiryTimeMs - currentTimeMs;
+
+    // Convert milliseconds to fractional years
+    const timeToExpiryYears = timeDiffMs / (365 * 24 * 60 * 60 * 1000);
+    return Math.max(timeToExpiryYears, 0); // Ensure non-negative
+}
+
 /**
  * Estimate IV from option price using bisection method
  */
-const estimateIVFromPrice = (type, optionPrice, spotPrice, strikePrice, timeToExpiry, riskFreeRate = 0.05) => {
+const estimateIVFromPrice = (type, optionPrice, spotPrice, strikePrice, timeToExpiry, riskFreeRate = 0.065) => { // TODO: rskFreeRate debt should be entered through input
   if (!optionPrice || optionPrice <= 0) return 0;
   
   let low = 0.01;

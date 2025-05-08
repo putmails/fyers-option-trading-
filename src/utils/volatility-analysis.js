@@ -3,42 +3,39 @@
  * This module provides functions to calculate and analyze historical and implied volatility
  */
 
+import { PERIOD_DAYS } from "./constant";
+
 /**
  * Calculate historical volatility based on provided price history
  * @param {Array} priceHistory - Array of historical prices (most recent first)
  * @param {number} period - Number of periods to consider (default 20)
  * @returns {number} Historical volatility as a decimal (e.g., 0.25 for 25%)
  */
-export const calculateHistoricalVolatility = (priceHistory, period = 20) => {
-  // If no price history or insufficient data, return a default value
-  if (!priceHistory || priceHistory.length < period + 1) {
+export const calculateHistoricalVolatility = (priceHistory, period = PERIOD_DAYS) => {
+  if (!priceHistory || period + 1 < priceHistory.length ) {
+    console.log("🚀 ~ calculateHistoricalVolatility ~ Returning 0.3 priceHistory:", priceHistory)
     return 0.3; // Default 30% volatility
   }
 
-  // Calculate returns (log price changes)
   const returns = [];
-  for (let i = 1; i < Math.min(period + 1, priceHistory.length); i++) {
-    const currentPrice = priceHistory[i - 1];
-    const previousPrice = priceHistory[i];
-    
+  for (let i = 1; i <= period; i++) {
+    const currentPrice = priceHistory[i];
+    const previousPrice = priceHistory[i - 1];
+
     if (currentPrice > 0 && previousPrice > 0) {
       returns.push(Math.log(currentPrice / previousPrice));
     }
   }
 
-  // Calculate mean return
-  const meanReturn = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
+  const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
 
-  // Calculate variance of returns
-  const variance = returns.reduce((sum, ret) => {
-    return sum + Math.pow(ret - meanReturn, 2);
-  }, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (returns.length - 1);
 
-  // Convert to annualized volatility (assuming daily prices - multiply by sqrt(252))
   const annualizedVolatility = Math.sqrt(variance * 252);
-
+  console.log("🚀 ~ calculateHistoricalVolatility ~ annualizedVolatility:", annualizedVolatility)
   return annualizedVolatility;
 };
+
 
 /**
  * Estimate historical volatility when true price history is not available

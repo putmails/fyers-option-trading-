@@ -6,3 +6,5 @@ export const availableSymbols = [
     // { label: 'INFY', value: 'NSE:INFY-EQ' },
     // { label: 'SBIN', value: 'NSE:SBIN-EQ' },
   ]
+
+  export const PERIOD_DAYS = 30;
