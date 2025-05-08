@@ -2,6 +2,8 @@
  * Helper functions for options trading calculations
  */
 
+import { RISK_FREE_INTEREST } from "./constant";
+
 /**
  * Calculate option Greeks using Black-Scholes model (simplified)
  * This is a basic implementation and real-world calculations would be more complex
@@ -20,7 +22,7 @@ export const calculateGreeks = (
   strikePrice,
   timeToExpiry,
   volatility,
-  riskFreeRate = 0.05
+  riskFreeRate  = RISK_FREE_INTEREST
 ) => {
   const S = spotPrice;
   const K = strikePrice;
@@ -127,7 +129,7 @@ export const calculateImpliedVolatility = (
   spotPrice,
   strikePrice,
   timeToExpiry
-  // riskFreeRate = 0.05
+  // riskFreeRate  = RISK_FREE_INTEREST
 ) => {
   // This is a very simplified approximation
   // Real IV calculation requires iterative solver
@@ -238,7 +240,7 @@ export const calculateOptionPrice = (
   strikePrice,
   timeToExpiry,
   volatility,
-  riskFreeRate = 0.05
+  riskFreeRate = RISK_FREE_INTEREST
 ) => {
   const S = spotPrice;
   const K = strikePrice;

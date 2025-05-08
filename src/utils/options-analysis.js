@@ -1,3 +1,4 @@
+import { RISK_FREE_INTEREST, THRESHOLD_PERCENT } from './constant';
 import { calculateGreeks, calculateOptionPrice } from './options-helper';
 
 /**
@@ -143,7 +144,7 @@ const currentTimeMs = Date.now(); // Current time in milliseconds
 /**
  * Estimate IV from option price using bisection method
  */
-const estimateIVFromPrice = (type, optionPrice, spotPrice, strikePrice, timeToExpiry, riskFreeRate = 0.065) => { // TODO: rskFreeRate debt should be entered through input
+const estimateIVFromPrice = (type, optionPrice, spotPrice, strikePrice, timeToExpiry, riskFreeRate = RISK_FREE_INTEREST) => { // TODO: rskFreeRate debt should be entered through input
   if (!optionPrice || optionPrice <= 0) return 0;
   
   let low = 0.01;
@@ -249,7 +250,6 @@ export const identifyTradingOpportunities = (optionsWithTheoreticalPrices) => {
     return { callOpportunities: [], putOpportunities: [] };
   }
   
-  const THRESHOLD_PERCENT = 10; // Threshold for significant price difference (%)
   
   const callOpportunities = [];
   const putOpportunities = [];
@@ -286,7 +286,9 @@ export const identifyTradingOpportunities = (optionsWithTheoreticalPrices) => {
   
   // Sort by score (highest first)
   callOpportunities.sort((a, b) => b.score - a.score);
+  console.log("🚀 ~ identifyTradingOpportunities ~ callOpportunities:", callOpportunities)
   putOpportunities.sort((a, b) => b.score - a.score);
+  console.log("🚀 ~ identifyTradingOpportunities ~ putOpportunities:", putOpportunities)
   
   return { callOpportunities, putOpportunities };
 };

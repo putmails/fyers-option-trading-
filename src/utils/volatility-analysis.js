@@ -123,7 +123,7 @@ export const analyzeVolatilitySkew = (impliedVolatility, historicalVolatility) =
  * @param {object} underlying - Underlying asset data
  * @returns {object} Complete volatility analysis
  */
-export const analyzeOptionVolatility = (option, underlying) => {
+export const analyzeOptionVolatility = (option, underlying, estimatedHV) => {
   if (!option || !underlying) {
     return null;
   }
@@ -132,14 +132,13 @@ export const analyzeOptionVolatility = (option, underlying) => {
   const impliedVolatility = option.impliedVolatility || (option.greeks?.vega ? (option.theoreticalPrice / (option.greeks.vega * 100)) : 0.3);
   
   // Estimate historical volatility from underlying price
-  const historicalVolatility = estimateHistoricalVolatility(underlying.ltp, impliedVolatility * 0.8);
+  // const historicalVolatility = estimateHistoricalVolatility(underlying.ltp, impliedVolatility * 0.8); //FIXME: harcoded 0.8 as HV to be replaced
   
   // Analyze the volatility skew
-  const skewAnalysis = analyzeVolatilitySkew(impliedVolatility, historicalVolatility);
+  const skewAnalysis = analyzeVolatilitySkew(impliedVolatility, estimatedHV);
   
   return {
     impliedVolatility,
-    historicalVolatility,
     ...skewAnalysis
   };
 };

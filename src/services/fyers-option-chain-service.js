@@ -5,7 +5,7 @@ import {
   getTodayUnixTimestamp,
   getUnixTimestampNDaysAgo,
 } from '../utils/common.utils';
-import { PERIOD_DAYS } from '../utils/constant';
+import { FETCH_DUMMY_DATA, PERIOD_DAYS } from '../utils/constant';
 /**
  * Get option chain data from Fyers API
  * @param {string} symbol - Symbol to fetch option chain (e.g., "NSE:TCS-EQ")
@@ -17,7 +17,7 @@ export const getOptionChainData = async (
   symbol,
   strikeCount = 5,
   timestamp = '',
-  isFile = false
+  isFile = FETCH_DUMMY_DATA
 ) => {
   try {
     let response = null;
