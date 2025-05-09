@@ -147,7 +147,7 @@ const OptionRow = ({
           backgroundColor: callITM ? 'rgba(200, 230, 201, 0.3)' : 'transparent'
         }}
       >
-        {row.call?.priceDifference ? formatPriceDifference(row.call.priceDifference) : '-'}
+        {row.call?.priceDifference ? formatPriceDifference(row.call.priceDifference): '-'}
       </TableCell>
       
       {/* Strike Price */}

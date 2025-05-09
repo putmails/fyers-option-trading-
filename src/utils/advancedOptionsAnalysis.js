@@ -19,7 +19,6 @@ import {
  * @returns {object} - Put-call ratio and other volatility metrics
  */
 export function calculateVolatilityMetrics(optionChain) {
-  console.log("🚀 ~ calculateVolatilityMetrics ~ optionChain:", optionChain)
   let totalCallVolume = 0;
   let totalPutVolume = 0;
   let totalCallOI = 0;

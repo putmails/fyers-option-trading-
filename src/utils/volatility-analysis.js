@@ -12,28 +12,29 @@ import { PERIOD_DAYS } from "./constant";
  * @returns {number} Historical volatility as a decimal (e.g., 0.25 for 25%)
  */
 export const calculateHistoricalVolatility = (priceHistory, period = PERIOD_DAYS) => {
-  if (!priceHistory || period + 1 < priceHistory.length ) {
-    console.log("🚀 ~ calculateHistoricalVolatility ~ Returning 0.3 priceHistory:", priceHistory)
-    return 0.3; // Default 30% volatility
+    if (!priceHistory || priceHistory.length < 2) {
+    return 0.3; // Not even one return possible
   }
 
+  const usablePeriod = Math.min(period, priceHistory.length - 1);
+  const slicedPrices = priceHistory.slice(-1 * (usablePeriod + 1));
+
   const returns = [];
-  for (let i = 1; i <= period; i++) {
-    const currentPrice = priceHistory[i];
-    const previousPrice = priceHistory[i - 1];
+  for (let i = 1; i < slicedPrices.length; i++) {
+    const currentPrice = slicedPrices[i];
+    const previousPrice = slicedPrices[i - 1];
 
     if (currentPrice > 0 && previousPrice > 0) {
       returns.push(Math.log(currentPrice / previousPrice));
     }
   }
 
-  const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+  if (returns.length < 2) return 0.3;
 
+  const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
   const variance = returns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (returns.length - 1);
 
-  const annualizedVolatility = Math.sqrt(variance * 252);
-  // console.log("🚀 ~ calculateHistoricalVolatility ~ annualizedVolatility:", annualizedVolatility)
-  return annualizedVolatility;
+  return Math.sqrt(variance * 252); // Annualized volatility
 };
 
 

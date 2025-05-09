@@ -148,8 +148,7 @@ const useOptionStore = create((set, get) => ({
           const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
           // console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
-          // Estimate historical volatility (in a real app, this would come from market data)
-          // For now, we'll simulate it as slightly lower than IV
+       
           // Calculate volatility skew
           const skewAnalysis = {
             skewRatio: estimatedIV / estimatedHV,
@@ -174,7 +173,7 @@ const useOptionStore = create((set, get) => ({
             supportResistance: levels,
             marketConditions: {
               ...get().marketConditions,
-              putCallRatio: volatilityMetrics.putCallVolumeRatio,
+              putCallRatio: volatilityMetrics.putCallOIRatio,
             },
           });
 
@@ -184,7 +183,7 @@ const useOptionStore = create((set, get) => ({
               formattedData.underlying,
               {
                 ...get().marketConditions,
-                putCallRatio: volatilityMetrics.putCallVolumeRatio,
+                putCallRatio: volatilityMetrics.putCallOIRatio,
               },
               expiry
             )
@@ -215,8 +214,8 @@ const useOptionStore = create((set, get) => ({
                   ...option.call,
                   theoreticalPrice: option.call.hybridPrice,
                   priceDifference:
-                    (option.call.ltp -
-                      option.call.hybridPrice / option.call.hybridPrice) *
+                    ((option.call.ltp -
+                      option.call.hybridPrice )/ option.call.hybridPrice) *
                     100,
                   volatilityAnalysis,
                 };

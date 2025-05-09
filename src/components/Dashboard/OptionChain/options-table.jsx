@@ -58,10 +58,10 @@ const OptionsTable = ({
             <TableCell align="right">IV/HV</TableCell>
             <TableCell align="right">LTP</TableCell>
             <TableCell align="right">Theo.</TableCell>
-            <TableCell align="right">Diff</TableCell>
+            <TableCell align="right">Diff (%)</TableCell>
 
             {/* Put Headers */}
-            <TableCell align="right">Diff</TableCell>
+            <TableCell align="right">Diff (%)</TableCell>
             <TableCell align="right">Theo.</TableCell>
             <TableCell align="right">LTP</TableCell>
             <TableCell align="right">IV/HV</TableCell>

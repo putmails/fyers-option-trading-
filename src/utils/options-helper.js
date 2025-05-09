@@ -242,14 +242,36 @@ export const calculateOptionPrice = (
   volatility,
   riskFreeRate = RISK_FREE_INTEREST
 ) => {
+  // Input validation and edge cases
+  if (!spotPrice || spotPrice <= 0) return 0;
+  if (!strikePrice || strikePrice <= 0) return 0;
+  if (volatility <= 0) return 0;
+  
   const S = spotPrice;
   const K = strikePrice;
-  const T = timeToExpiry;
-  const v = volatility;
   const r = riskFreeRate;
+  
+  // Handle edge case: time to expiry very close to or at zero
+  const epsilon = 1e-8; // Small constant to avoid division by zero
+  const T = Math.max(timeToExpiry, epsilon);
+  const v = volatility;
 
+  // Very deep ITM or OTM options edge cases
+  if (type === 'call' && S > K * 10) return Math.max(0, S - K * Math.exp(-r * T));
+  if (type === 'call' && S < K / 10) return Math.max(0, S * 1e-10);
+  if (type === 'put' && S < K / 10) return Math.max(0, K * Math.exp(-r * T) - S);
+  if (type === 'put' && S > K * 10) return Math.max(0, S * 1e-10);
+
+  // Handle extremely high volatility
+  const maxVol = 5;
+  const safeVol = Math.min(v, maxVol);
+  
   // Helper function for normal distribution CDF
   const cdf = (x) => {
+    // For extreme values, return 0 or 1 directly
+    if (x < -8) return 0;
+    if (x > 8) return 1;
+    
     const a1 = 0.254829592;
     const a2 = -0.284496736;
     const a3 = 1.421413741;
@@ -267,20 +289,33 @@ export const calculateOptionPrice = (
     return 0.5 * (1 + sign * y);
   };
 
-  // Calculate d1 and d2
-  const d1 = (Math.log(S / K) + (r + 0.5 * v * v) * T) / (v * Math.sqrt(T));
-  const d2 = d1 - v * Math.sqrt(T);
+  try {
+    // Calculate d1 and d2
+    const d1 = (Math.log(S / K) + (r + 0.5 * safeVol * safeVol) * T) / (safeVol * Math.sqrt(T));
+    const d2 = d1 - safeVol * Math.sqrt(T);
 
-  // Calculate option price based on type
-  let price;
-  if (type === 'call') {
-    price = S * cdf(d1) - K * Math.exp(-r * T) * cdf(d2);
-  } else {
-    // put
-    price = K * Math.exp(-r * T) * cdf(-d2) - S * cdf(-d1);
+    // Calculate option price based on type
+    let price;
+    if (type === 'call') {
+      price = S * cdf(d1) - K * Math.exp(-r * T) * cdf(d2);
+    } else {
+      // put
+      price = K * Math.exp(-r * T) * cdf(-d2) - S * cdf(-d1);
+    }
+
+    // Ensure price is non-negative and handle NaN
+    price = isNaN(price) ? 0 : Math.max(0, price);
+    
+    return price;
+  } catch (error) {
+    console.error("Error calculating option price:", error);
+    // Fallback to intrinsic value
+    if (type === 'call') {
+      return Math.max(0, S - K);
+    } else {
+      return Math.max(0, K - S);
+    }
   }
-
-  return parseFloat(price.toFixed(2));
 };
 
 /**

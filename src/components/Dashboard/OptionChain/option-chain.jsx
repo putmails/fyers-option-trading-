@@ -121,7 +121,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     if (difference === null || difference === undefined) return null;
 
     const isOverpriced = difference > 0;
-    const color = isOverpriced ? 'error.main' : 'success.main';
+    const color = isOverpriced ? 'success.main' :'error.main';
     const prefix = isOverpriced ? '+' : '';
 
     return (
