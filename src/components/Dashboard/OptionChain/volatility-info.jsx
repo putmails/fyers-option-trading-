@@ -27,8 +27,11 @@ const VolatilityInfo = () => {
         <Grid item xs={12} md={6}>
           {volatilitySkew && (
             <Box>
-              <Typography variant="body2">
-                IV/HV Ratio: <b>{volatilitySkew.skewRatio.toFixed(2)}</b>
+              {/* Fixed: Using Box or span instead of Typography+Chip combo */}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Typography variant="body2" component="span">
+                  IV/HV Ratio: <b>{volatilitySkew.skewRatio.toFixed(2)}</b>
+                </Typography>
                 <Chip
                   label={
                     volatilitySkew.skewRatio > 1.1
@@ -47,11 +50,11 @@ const VolatilityInfo = () => {
                   }
                   sx={{ ml: 1 }}
                 />
-              </Typography>
+              </Box>
               <Typography variant="body2">
                 IV-HV Difference:{' '}
-                <b>{(volatilitySkew.skewDifference * 100).toFixed(1)}%</b>(
-                {volatilitySkew.skewPercentage.toFixed(1)}% of HV)
+                <b>{(volatilitySkew.skewDifference * 100).toFixed(1)}%</b>{' '}
+                ({volatilitySkew.skewPercentage.toFixed(1)}% of HV)
               </Typography>
             </Box>
           )}

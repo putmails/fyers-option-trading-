@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -45,12 +45,21 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     setSelectedRow,
   } = useOptionStore();
 
+  const intervalRef = useRef(null)
   // Fetch data when component mounts or symbol changes
   useEffect(() => {
     if (selectedSymbol) {
       console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
       fetchOptionChain(selectedSymbol);
+      clearInterval(intervalRef.current)
+      intervalRef.current = setInterval(() => {
+
+        fetchOptionChain(selectedSymbol);
+      }
+      , 60000); 
     }
+
+    return () => clearInterval(intervalRef.current);
   }, [fetchOptionChain, selectedSymbol]);
 
   // Check if a strike price is a support or resistance level

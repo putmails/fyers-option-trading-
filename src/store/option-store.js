@@ -10,12 +10,13 @@ import {
   estimateImpliedVolatility,
   identifyTradingOpportunities,
 } from '../utils/options-analysis';
-import { analyzeOptionVolatility, calculateHistoricalVolatility } from '../utils/volatility-analysis';
 import {
-  calibrateHestonModel,
-} from '../utils/optionPricingModels/heston';
+  analyzeOptionVolatility,
+  calculateHistoricalVolatility,
+} from '../utils/volatility-analysis';
+import { calibrateHestonModel } from '../utils/optionPricingModels/heston';
 import { calculateVolatilityMetrics } from '../utils/advancedOptionsAnalysis';
-import {  calculateOptionCallPutPrice } from '../services/pricingService';
+import { calculateOptionCallPutPrice } from '../services/pricingService';
 
 // Define the store using Zustand's create function
 const useOptionStore = create((set, get) => ({
@@ -104,12 +105,12 @@ const useOptionStore = create((set, get) => ({
   // Fetch option chain data for a symbol
   fetchOptionChain: async (symbol) => {
     try {
-      set({ isLoading: true, error: null });
+      set({ isLoading: false, error: null });
 
       const rawData = await getOptionChainData(symbol, 10);
       const formattedData = formatOptionChainData(rawData);
       const closes = await fetchHistoricalCloses(symbol, PERIOD_DAYS);
-      console.log("🚀 ~ fetchOptionChain: ~ formattedData:", formattedData)
+      console.log('🚀 ~ fetchOptionChain: ~ formattedData:', formattedData);
 
       if (formattedData && rawData) {
         // Sort options by strike price in ascending order
@@ -126,15 +127,15 @@ const useOptionStore = create((set, get) => ({
           set({ selectedExpiry: formattedData.expiryDates[0].value }); // TODO: Expiry date label and value can be mismatched.
         }
 
-
         // Calculate support and resistance levels
         if (formattedData.underlying && formattedData.underlying.ltp) {
           const spotPrice = formattedData.underlying.ltp;
 
           const volatilityMetrics = calculateVolatilityMetrics(sortedOptions);
 
-          const expiry = get().selectedExpiry || formattedData.expiryDates[0].value
-          console.log("🚀 ~ fetchOptionChain: ~ expiry:", expiry)
+          const expiry =
+            get().selectedExpiry || formattedData.expiryDates[0].value;
+          console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
@@ -163,8 +164,6 @@ const useOptionStore = create((set, get) => ({
             estimatedIV
           );
 
-          
-
           set({
             volatilityData: {
               ...get().volatilityData,
@@ -180,13 +179,21 @@ const useOptionStore = create((set, get) => ({
           });
 
           const optionsWithTheoreticalPrices = sortedOptions.map((option) =>
-            calculateOptionCallPutPrice(option, formattedData.underlying,   {
-              ...get().marketConditions,
-              putCallRatio: volatilityMetrics.putCallVolumeRatio,
-            }, expiry)
+            calculateOptionCallPutPrice(
+              option,
+              formattedData.underlying,
+              {
+                ...get().marketConditions,
+                putCallRatio: volatilityMetrics.putCallVolumeRatio,
+              },
+              expiry
+            )
           );
-          console.log("🚀 ~ fetchOptionChain: ~ optionsWithTheoreticalPrices:", optionsWithTheoreticalPrices)
-          
+          console.log(
+            '🚀 ~ fetchOptionChain: ~ optionsWithTheoreticalPrices:',
+            optionsWithTheoreticalPrices
+          );
+
           // Add volatility analysis to each option
           const optionsWithVolatilityAnalysis =
             optionsWithTheoreticalPrices.map((option) => {
@@ -197,7 +204,7 @@ const useOptionStore = create((set, get) => ({
                   {
                     ...option.call,
                     impliedVolatility: estimatedIV,
-                    theoreticalPrice: option.call.theoreticalPrice,
+                    theoreticalPrice: option.call.hybridPrice,
                     greeks: option.call.greeks,
                   },
                   formattedData.underlying,
@@ -206,6 +213,11 @@ const useOptionStore = create((set, get) => ({
 
                 enhancedOption.call = {
                   ...option.call,
+                  theoreticalPrice: option.call.hybridPrice,
+                  priceDifference:
+                    (option.call.ltp -
+                      option.call.hybridPrice / option.call.hybridPrice) *
+                    100,
                   volatilityAnalysis,
                 };
               }
@@ -215,7 +227,7 @@ const useOptionStore = create((set, get) => ({
                   {
                     ...option.put,
                     impliedVolatility: estimatedIV,
-                    theoreticalPrice: option.put.theoreticalPrice,
+                    theoreticalPrice: option.put.hybridPrice,
                     greeks: option.put.greeks,
                   },
                   formattedData.underlying,
@@ -224,6 +236,11 @@ const useOptionStore = create((set, get) => ({
 
                 enhancedOption.put = {
                   ...option.put,
+                  theoreticalPrice: option.put.hybridPrice,
+                  priceDifference:
+                    ((option.put.ltp - option.put.hybridPrice) /
+                      option.put.hybridPrice) *
+                    100,
                   volatilityAnalysis,
                 };
               }
@@ -235,7 +252,10 @@ const useOptionStore = create((set, get) => ({
           const sortedEnhancedOptions = [...optionsWithVolatilityAnalysis].sort(
             (a, b) => a.strikePrice - b.strikePrice
           );
-          console.log("🚀 ~ fetchOptionChain: ~ sortedEnhancedOptions:", sortedEnhancedOptions)
+          console.log(
+            '🚀 ~ fetchOptionChain: ~ sortedEnhancedOptions:',
+            sortedEnhancedOptions
+          );
           // Identify trading opportunities
           const opportunities = identifyTradingOpportunities(
             sortedEnhancedOptions

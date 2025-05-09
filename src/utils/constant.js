@@ -9,5 +9,5 @@ export const availableSymbols = [
 
   export const PERIOD_DAYS = 30;
   export const RISK_FREE_INTEREST = 0.065;
-  export const FETCH_DUMMY_DATA = true; // Set to false to use cached data
+  export const FETCH_DUMMY_DATA = false; // Set to false to use cached data
   export const THRESHOLD_PERCENT = 10

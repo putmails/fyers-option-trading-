@@ -241,11 +241,11 @@ function priceOptionChain(optionChain, underlyingData, marketConditions) {
  * @returns {object} - Price difference data
  */
 function getPriceDifference(option, theoreticalPrice) {
-  if (!option.lastPrice) {
+  if (!option.ltp) {
     return { absolute: 0, percentage: 0 };
   }
 
-  const absolute = option.lastPrice - theoreticalPrice;
+  const absolute = option.ltp - theoreticalPrice;
   const percentage = (absolute / theoreticalPrice) * 100;
 
   return { absolute, percentage };
