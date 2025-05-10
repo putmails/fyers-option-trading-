@@ -86,33 +86,45 @@ function calculateHybridPrice({
   marketConditions,
   expiry,
   type,
+  useOnlyBS = true,
 }) {
-  // Extract option parameters
   const S = underlyingData.ltp;
   const K = strikePrice;
   const daysToExpiry = calculateDaysToExpiry(expiry);
   const T = daysToYears(daysToExpiry);
-
-  // Use a reasonable risk-free rate for India
-  const r = RISK_FREE_INTEREST ?? 0.065; // 6.5% annual rate
-
-  // Calculate moneyness
+  const r = RISK_FREE_INTEREST ?? 0.065;
   const moneyness = calculateMoneyness(S, K);
 
-  // Calculate implied volatility from market price (if available)
-  let impliedVolatility = 0.3; // Default assumption
-  
+  let impliedVolatility = 0.3;
   if (ltp) {
     impliedVolatility = calculateImpliedVolatility(ltp, S, K, T, r, type);
   }
-
-  // Calculate Black-Scholes price
+  
   const bsPrice =
-    type === 'call'
-      ? calculateCallPrice(S, K, T, r, impliedVolatility)
-      : calculatePutPrice(S, K, T, r, impliedVolatility);
+  type === 'call'
+  ? calculateCallPrice(S, K, T, r, impliedVolatility)
+  : calculatePutPrice(S, K, T, r, impliedVolatility);
+  
+  // console.log(`🚀 ~ltp :: ${ltp} bsPrice: ${bsPrice}`);
+  if (useOnlyBS) {
+    const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
+    return {
+      type,
+      ltp,
+      underlyingPrice: S,
+      daysToExpiry,
+      timeToExpiryYears: T,
+      impliedVolatility,
+      hybridPrice: bsPrice,
+      models: {
+        blackScholes: { price: bsPrice, weight: 1 },
+      },
+      greeks,
+      pricingDate: new Date(),
+    };
+  }
 
-  // Calculate Heston model price
+  // Heston + Neural Correction path
   const hestonParams = calibrateHestonModel([]);
   const hestonPrice = calculateHestonPrice(
     S,
@@ -127,28 +139,22 @@ function calculateHybridPrice({
     type
   );
 
-  // Get neural network correction factor
   const nnCorrection = getNeuralNetworkCorrection(
     { moneyness, timeToExpiry: T },
     { impliedVolatility, ...marketConditions }
   );
 
-  // Determine model weights based on option characteristics
   const weights = determineModelWeights(
     { moneyness, daysToExpiry, impliedVolatility },
     marketConditions
   );
 
-  // Calculate final hybrid price
   const hybridPrice =
     (weights.blackScholes * bsPrice + weights.heston * hestonPrice) *
     (1 + nnCorrection);
 
-  // Calculate greeks for the hybrid model
-  // For simplicity, we're using Black-Scholes greeks as a base
   const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
 
-  // Return comprehensive pricing results
   return {
     type,
     ltp,
@@ -199,7 +205,8 @@ export function calculateOptionCallPutPrice(
     expiry,
     type: 'put',
   });
-  return {...result,
+  return {
+    ...result,
     call: {
       ...result.call,
       ...callHybridPrice,

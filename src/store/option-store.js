@@ -44,16 +44,16 @@ const useOptionStore = create((set, get) => ({
   },
   selectedOptionType: null,
   selectedRow: null,
-  selectedSymbol: availableSymbols[0].value, // Default to the first symbol in the list
+  selectedSymbol: availableSymbols[1].value, // Default to the first symbol in the list
   selectedExpiry: null,
-  strikeCount: 10,
+  strikeCount: 5,
   isLoading: false,
   error: null,
-  marketConditions: {
-    volatilityIndex: 18.5, // Approximate VIX value for India
-    putCallRatio: 0.95, // Will be calculated from option chain
-    marketTrend: 'bullish',
-    liquidity: 'high',
+  marketConditions: { // Required in case of heston and NN model
+    volatilityIndex: 18.5, // FIXME: Approximate VIX value for India
+    putCallRatio: 0.95, // FIXME: Will be calculated from option chain
+    marketTrend: 'bullish',  // FIXME: determine bullish or bearing from chain data
+    liquidity: 'high', // FIXME: determine liquidity from chain data
   },
   hestonParams: calibrateHestonModel([]), // This will return default parameters
 
@@ -171,6 +171,7 @@ const useOptionStore = create((set, get) => ({
               volatilitySkew: skewAnalysis,
             },
             supportResistance: levels,
+            // FIXME: marketConditions should be updated from API in case of useOnlyBS is false
             marketConditions: {
               ...get().marketConditions,
               putCallRatio: volatilityMetrics.putCallOIRatio,
@@ -188,10 +189,6 @@ const useOptionStore = create((set, get) => ({
               expiry
             )
           );
-          console.log(
-            '🚀 ~ fetchOptionChain: ~ optionsWithTheoreticalPrices:',
-            optionsWithTheoreticalPrices
-          );
 
           // Add volatility analysis to each option
           const optionsWithVolatilityAnalysis =
@@ -202,7 +199,7 @@ const useOptionStore = create((set, get) => ({
                 const volatilityAnalysis = analyzeOptionVolatility(
                   {
                     ...option.call,
-                    impliedVolatility: estimatedIV,
+                    impliedVolatility: option.call.impliedVolatility,
                     theoreticalPrice: option.call.hybridPrice,
                     greeks: option.call.greeks,
                   },
@@ -225,7 +222,7 @@ const useOptionStore = create((set, get) => ({
                 const volatilityAnalysis = analyzeOptionVolatility(
                   {
                     ...option.put,
-                    impliedVolatility: estimatedIV,
+                    impliedVolatility: option.put.impliedVolatility,
                     theoreticalPrice: option.put.hybridPrice,
                     greeks: option.put.greeks,
                   },

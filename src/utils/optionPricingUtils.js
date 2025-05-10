@@ -2,32 +2,40 @@
  * Helper functions for option pricing and analysis
  */
 
+import { calculateCallPrice, calculatePutPrice } from "./optionPricingModels/blackScholes";
+
 /**
  * Calculate implied volatility from market price
  * Using a simplified approach for demonstration
  */
 // eslint-disable-next-line no-unused-vars
 export function calculateImpliedVolatility(marketPrice, S, K, T, r, type) {
-  // Simplified implementation
-  // In a real implementation, you would use an iterative approach
-  
-  // For demonstration, return a reasonable value based on moneyness
-  const moneyness = S / K;
-  let baseVol = 0.25; // Base volatility
-  
-  // Adjust for strike (volatility smile)
-  if (moneyness < 0.95) {
-    baseVol += 0.05; // Higher vol for OTM puts / ITM calls
-  } else if (moneyness > 1.05) {
-    baseVol += 0.03; // Higher vol for OTM calls / ITM puts
+  const MAX_ITERATIONS = 100;
+  const PRECISION = 1e-5;
+  let low = 0.0001;
+  let high = 5;
+  let mid = 0;
+
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    mid = (low + high) / 2;
+    const price = type === 'call'
+      ? calculateCallPrice(S, K, T, r, mid)
+      : calculatePutPrice(S, K, T, r, mid);
+    
+    const diff = price - marketPrice;
+
+    if (Math.abs(diff) < PRECISION) {
+      return mid;
+    }
+
+    if (diff > 0) {
+      high = mid;
+    } else {
+      low = mid;
+    }
   }
-  
-  // Adjust for time
-  if (T < 0.1) { // Less than ~36 days
-    baseVol += 0.02; // Higher vol for short-term options
-  }
-  
-  return baseVol;
+
+  return mid; // Return best estimate after max iterations
 }
 
 /**
