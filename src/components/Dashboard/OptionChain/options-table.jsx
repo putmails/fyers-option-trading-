@@ -6,6 +6,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Box,
+  Grid,
+  Typography,
   Paper,
 } from '@mui/material';
 import { OptionRow } from './index';
@@ -24,10 +27,32 @@ const OptionsTable = ({
   formatNumber,
   formatChange,
   formatPriceDifference,
+  selectedExpiry,
 }) => {
   if (!enhancedOptions || enhancedOptions.length === 0) return null;
 
   return (
+    <>
+    <Box sx={{ mb: 2 }}>
+      {/* Index Name, Expiry Date, and Strike Price */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={4}>
+          <Typography variant="body2">
+            Index: <b>{underlying.symbol}</b>
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Typography variant="body2">
+            Expiry: <b>{selectedExpiry || 'N/A'}</b>
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Typography variant="body2">
+            Strike: <b>{underlying?.ltp || 'N/A'}</b>
+          </Typography>
+        </Grid>
+      </Grid>
+    </Box>
     <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
       <Table stickyHeader size="small">
         <TableHead>
@@ -106,6 +131,7 @@ const OptionsTable = ({
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   );
 };
 

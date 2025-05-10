@@ -135,7 +135,7 @@ const useOptionStore = create((set, get) => ({
 
           const expiry =
             get().selectedExpiry || formattedData.expiryDates[0].value;
-          console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
+          console.log("🚀 ~ fetchOptionChain: ~ expiry:", expiry)
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,

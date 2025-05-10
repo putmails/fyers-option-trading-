@@ -48,7 +48,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
   const intervalRef = useRef(null)
   // Fetch data when component mounts or symbol changes
   useEffect(() => {
-    if (selectedSymbol) {
+    if (selectedSymbol || selectedExpiry) {
       console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
       fetchOptionChain(selectedSymbol);
       clearInterval(intervalRef.current)
@@ -60,7 +60,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [fetchOptionChain, selectedSymbol]);
+  }, [fetchOptionChain, selectedSymbol, selectedExpiry]);
 
   // Check if a strike price is a support or resistance level
   const isSupportResistance = useCallback(
@@ -203,6 +203,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
           formatNumber={formatNumber}
           formatChange={ChangeFormat}
           formatPriceDifference={formatPriceDifference}
+          selectedExpiry={selectedExpiry}
         />
       ) : !isLoading && !error ? (
         <Box sx={{ textAlign: 'center', my: 4 }}>
