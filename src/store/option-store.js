@@ -111,7 +111,7 @@ const useOptionStore = create((set, get) => ({
     try {
       let expiry =
         expiryDateLabelAndValue.value ??
-        get().selectedExpiry.value;
+        get().selectedExpiry.value ?? "";
         console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
 
       set({ isLoading: false, error: null });
