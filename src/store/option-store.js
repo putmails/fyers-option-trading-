@@ -45,14 +45,18 @@ const useOptionStore = create((set, get) => ({
   selectedOptionType: null,
   selectedRow: null,
   selectedSymbol: availableSymbols[1].value, // Default to the first symbol in the list
-  selectedExpiry: null,
+  selectedExpiry: {
+    label: null,
+    value: null,
+  },
   strikeCount: 5,
   isLoading: false,
   error: null,
-  marketConditions: { // Required in case of heston and NN model
+  marketConditions: {
+    // Required in case of heston and NN model
     volatilityIndex: 18.5, // FIXME: Approximate VIX value for India
     putCallRatio: 0.95, // FIXME: Will be calculated from option chain
-    marketTrend: 'bullish',  // FIXME: determine bullish or bearing from chain data
+    marketTrend: 'bullish', // FIXME: determine bullish or bearing from chain data
     liquidity: 'high', // FIXME: determine liquidity from chain data
   },
   hestonParams: calibrateHestonModel([]), // This will return default parameters
@@ -61,7 +65,7 @@ const useOptionStore = create((set, get) => ({
   setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
 
   // Set selected expiry date
-  setSelectedExpiry: (expiry) => set({ selectedExpiry: expiry }),
+  setSelectedExpiry: (date) => set({ selectedExpiry: date }),
 
   // Set strike count
   setStrikeCount: (count) => set({ strikeCount: count }),
@@ -103,15 +107,21 @@ const useOptionStore = create((set, get) => ({
   setError: (error) => set({ error }),
 
   // Fetch option chain data for a symbol
-  fetchOptionChain: async (symbol) => {
+  fetchOptionChain: async (symbol, expiryDateLabelAndValue) => {
     try {
+      let expiry =
+        expiryDateLabelAndValue.value ??
+        get().selectedExpiry.value;
+        console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
+
       set({ isLoading: false, error: null });
 
-      const rawData = await getOptionChainData(symbol, 10);
+      const rawData = await getOptionChainData(symbol, 10, expiry);
       const formattedData = formatOptionChainData(rawData);
       const closes = await fetchHistoricalCloses(symbol, PERIOD_DAYS);
       console.log('🚀 ~ fetchOptionChain: ~ formattedData:', formattedData);
 
+      if (!expiry) expiry = formattedData.expiryDates[0].value;
       if (formattedData && rawData) {
         // Sort options by strike price in ascending order
         const sortedOptions = [...formattedData.options].sort(
@@ -123,8 +133,11 @@ const useOptionStore = create((set, get) => ({
           expiryDates: formattedData.expiryDates,
         });
 
-        if (formattedData.expiryDates.length > 0 && !get().selectedExpiry) {
-          set({ selectedExpiry: formattedData.expiryDates[0].value }); // TODO: Expiry date label and value can be mismatched.
+        if (
+          formattedData.expiryDates.length > 0 &&
+          !expiryDateLabelAndValue.value
+        ) {
+          set({ selectedExpiry: formattedData.expiryDates[0] }); // TODO: Expiry date label and value can be mismatched.
         }
 
         // Calculate support and resistance levels
@@ -133,9 +146,6 @@ const useOptionStore = create((set, get) => ({
 
           const volatilityMetrics = calculateVolatilityMetrics(sortedOptions);
 
-          const expiry =
-            get().selectedExpiry || formattedData.expiryDates[0].value;
-          console.log("🚀 ~ fetchOptionChain: ~ expiry:", expiry)
           // Estimate implied volatility from market data
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
@@ -148,7 +158,6 @@ const useOptionStore = create((set, get) => ({
           const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
           // console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
-       
           // Calculate volatility skew
           const skewAnalysis = {
             skewRatio: estimatedIV / estimatedHV,
@@ -211,8 +220,8 @@ const useOptionStore = create((set, get) => ({
                   ...option.call,
                   theoreticalPrice: option.call.hybridPrice,
                   priceDifference:
-                    ((option.call.ltp -
-                      option.call.hybridPrice )/ option.call.hybridPrice) *
+                    ((option.call.ltp - option.call.hybridPrice) /
+                      option.call.hybridPrice) *
                     100,
                   volatilityAnalysis,
                 };

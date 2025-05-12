@@ -29,7 +29,7 @@ const ControlPanel = React.memo(() => {
 
   const handleSelectSymbol = useCallback((event) => {
     setSelectedSymbol(event.target.value);
-  }, []);
+  }, [setSelectedSymbol]);
 
   const handleSelectExpiry = useCallback((event) => {
     console.log(
@@ -37,7 +37,7 @@ const ControlPanel = React.memo(() => {
       event.target.value
     );
     setSelectedExpiry(event.target.value);
-  }, []);
+  }, [setSelectedExpiry]);
 
   if (availableSymbols.length === 0) return null;
   return (
@@ -68,13 +68,13 @@ const ControlPanel = React.memo(() => {
           <Select
             labelId="expiry-select-label"
             id="expiry-select"
-            value={selectedExpiry}
+            value={selectedExpiry.date}
             label="Expiry"
             onChange={handleSelectExpiry}
             disabled={isLoading || expiryDates.length === 0}
           >
             {expiryDates.map((date) => (
-              <MenuItem key={date.value} value={date.value}>
+              <MenuItem key={date.value} value={date}>
                 {date.label}
               </MenuItem>
             ))}

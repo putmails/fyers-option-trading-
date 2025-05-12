@@ -50,7 +50,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
   useEffect(() => {
     if (selectedSymbol || selectedExpiry) {
       console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
-      fetchOptionChain(selectedSymbol);
+      fetchOptionChain(selectedSymbol, selectedExpiry);
       clearInterval(intervalRef.current)
       intervalRef.current = setInterval(() => {
 
@@ -99,7 +99,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
 
       // Get the current expiry date
       const expiryDate =
-        expiryDates.find((date) => date.value === selectedExpiry)?.label || '';
+        expiryDates.find((date) => date.value === selectedExpiry.value)?.label || '';
 
       // Pass to parent component
       if (onOptionSelect && option) {

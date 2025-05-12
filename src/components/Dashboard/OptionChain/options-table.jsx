@@ -43,7 +43,7 @@ const OptionsTable = ({
         </Grid>
         <Grid item xs={12} md={4}>
           <Typography variant="body2">
-            Expiry: <b>{selectedExpiry || 'N/A'}</b>
+            Expiry: <b>{selectedExpiry.label || 'N/A'}</b>
           </Typography>
         </Grid>
         <Grid item xs={12} md={4}>
