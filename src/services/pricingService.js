@@ -10,13 +10,7 @@ import {
   calculateGreeks,
 } from '../utils/optionPricingModels/blackScholes';
 import {
-  calculateHestonPrice,
-  calibrateHestonModel,
-} from '../utils/optionPricingModels/heston';
-import { getNeuralNetworkCorrection } from '../utils/optionPricingModels/neuralNetwork';
-import {
   calculateImpliedVolatility,
-  calculateMoneyness,
   calculateDaysToExpiry,
   daysToYears,
 } from '../utils/optionPricingUtils';
@@ -27,7 +21,7 @@ import {
  * @param {object} marketConditions - Current market conditions
  * @returns {object} - Model weights
  */
-function determineModelWeights(optionCharacteristics, marketConditions) {
+export function determineModelWeights(optionCharacteristics, marketConditions) {
   // eslint-disable-next-line no-unused-vars
   const { moneyness, daysToExpiry, impliedVolatility } = optionCharacteristics;
   const { volatilityIndex } = marketConditions;
@@ -83,17 +77,18 @@ function calculateHybridPrice({
   strikePrice,
   ltp,
   underlyingData,
-  marketConditions,
+  // marketConditions,
   expiry,
   type,
-  useOnlyBS = true,
+  hv = 0.25
+  // useOnlyBS = true,
 }) {
   const S = underlyingData.ltp;
   const K = strikePrice;
   const daysToExpiry = calculateDaysToExpiry(expiry);
   const T = daysToYears(daysToExpiry);
   const r = RISK_FREE_INTEREST ?? 0.065;
-  const moneyness = calculateMoneyness(S, K);
+  // const moneyness = calculateMoneyness(S, K);
 
   let impliedVolatility = 0.3;
   if (ltp) {
@@ -102,11 +97,11 @@ function calculateHybridPrice({
   
   const bsPrice =
   type === 'call'
-  ? calculateCallPrice(S, K, T, r, impliedVolatility)
-  : calculatePutPrice(S, K, T, r, impliedVolatility);
+  ? calculateCallPrice(S, K, T, r, hv)
+  : calculatePutPrice(S, K, T, r, hv);
   
   // console.log(`🚀 ~ltp :: ${ltp} bsPrice: ${bsPrice}`);
-  if (useOnlyBS) {
+  // if (useOnlyBS) {
     const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
     return {
       type,
@@ -122,62 +117,15 @@ function calculateHybridPrice({
       greeks,
       pricingDate: new Date(),
     };
-  }
-
-  // Heston + Neural Correction path
-  const hestonParams = calibrateHestonModel([]);
-  const hestonPrice = calculateHestonPrice(
-    S,
-    K,
-    T,
-    r,
-    hestonParams.v0,
-    hestonParams.kappa,
-    hestonParams.theta,
-    hestonParams.sigma,
-    hestonParams.rho,
-    type
-  );
-
-  const nnCorrection = getNeuralNetworkCorrection(
-    { moneyness, timeToExpiry: T },
-    { impliedVolatility, ...marketConditions }
-  );
-
-  const weights = determineModelWeights(
-    { moneyness, daysToExpiry, impliedVolatility },
-    marketConditions
-  );
-
-  const hybridPrice =
-    (weights.blackScholes * bsPrice + weights.heston * hestonPrice) *
-    (1 + nnCorrection);
-
-  const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
-
-  return {
-    type,
-    ltp,
-    underlyingPrice: S,
-    daysToExpiry,
-    timeToExpiryYears: T,
-    impliedVolatility,
-    models: {
-      blackScholes: { price: bsPrice, weight: weights.blackScholes },
-      heston: { price: hestonPrice, weight: weights.heston },
-      neuralCorrection: nnCorrection,
-    },
-    hybridPrice,
-    greeks,
-    pricingDate: new Date(),
-  };
+  
 }
 
 export function calculateOptionCallPutPrice(
   option,
   underlyingData,
   marketConditions,
-  expiry
+  expiry,
+  hv
 ) {
   const result = {
     ...option,
@@ -196,6 +144,7 @@ export function calculateOptionCallPutPrice(
     marketConditions,
     expiry,
     type: 'call',
+    hv
   });
   const putHybridPrice = calculateHybridPrice({
     strikePrice: option.strikePrice,
@@ -204,6 +153,7 @@ export function calculateOptionCallPutPrice(
     marketConditions,
     expiry,
     type: 'put',
+    hv
   });
   return {
     ...result,

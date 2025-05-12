@@ -114,7 +114,7 @@ const OptionRow = ({
           <Tooltip 
             title={
               (callOpportunity || callVolatility?.tradingSignal) ? 
-                `${callOpportunity?.action || callVolatility?.tradingSignal} opportunity - ${Math.abs(row.call.percentDifference || callVolatility?.skewPercentage || 0).toFixed(1)}% ${row.call.percentDifference > 0 || callVolatility?.skewRatio > 1 ? 'overpriced' : 'underpriced'}`
+                `${callOpportunity?.action || callVolatility?.tradingSignal} opportunity - ${Math.abs(row.call.priceDifference || callVolatility?.skewPercentage || 0).toFixed(1)}% ${row.call.priceDifference > 0 || callVolatility?.skewRatio > 1 ? 'overpriced' : 'underpriced'}`
                 : ''
             }
             arrow
@@ -217,7 +217,7 @@ const OptionRow = ({
           <Tooltip 
             title={
               (putOpportunity || putVolatility?.tradingSignal) ? 
-                `${putOpportunity?.action || putVolatility?.tradingSignal} opportunity - ${Math.abs(row.put.percentDifference || putVolatility?.skewPercentage || 0).toFixed(1)}% ${row.put.percentDifference > 0 || putVolatility?.skewRatio > 1 ? 'overpriced' : 'underpriced'}`
+                `${putOpportunity?.action || putVolatility?.tradingSignal} opportunity - ${Math.abs(row.put.priceDifference || putVolatility?.skewPercentage || 0).toFixed(1)}% ${row.put.priceDifference > 0 || putVolatility?.skewRatio > 1 ? 'overpriced' : 'underpriced'}`
                 : ''
             }
             arrow
