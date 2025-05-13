@@ -111,10 +111,9 @@ export function getOptionType(option) {
 }
 
 export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryDate, r = 0.065) {
-  const today = new Date();
-const expiry = new Date(expiryDate * 1000); // Convert to milliseconds
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const T = daysToYears((expiry - today) / msPerDay);
+  const today = Math.floor(Date.now() / 1000);
+  const msInAYear = 365* 24 * 60 * 60 ;
+  const T = (expiryDate - today) / msInAYear;
 
   const theoreticalDiff = spot - strike * Math.exp(-r * T);
   const actualDiff = callLTP - putLTP;
@@ -122,14 +121,4 @@ const expiry = new Date(expiryDate * 1000); // Convert to milliseconds
   const deviation = actualDiff - theoreticalDiff;
 
   return deviation.toFixed(2);
-  // return {
-  //   strike,
-  //   callLTP,
-  //   putLTP,
-  //   theoreticalDiff: theoreticalDiff.toFixed(2),
-  //   actualDiff: actualDiff.toFixed(2),
-  //   deviation: deviation.toFixed(2),
-  //   T: T.toFixed(4),
-  //   alert: Math.abs(deviation) > 5  // ₹5 threshold
-  // };
 }
