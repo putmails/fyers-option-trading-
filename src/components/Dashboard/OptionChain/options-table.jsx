@@ -53,7 +53,7 @@ const OptionsTable = ({
         </Grid>
       </Grid>
     </Box>
-    <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+    <TableContainer component={Paper} sx={{ maxHeight: 900 }}>
       <Table stickyHeader size="small">
         <TableHead>
           <TableRow>
@@ -64,7 +64,7 @@ const OptionsTable = ({
             >
               CALLS
             </TableCell>
-            <TableCell align="center" rowSpan={2} sx={{ bgcolor: 'grey.300' }}>
+            <TableCell align="center" rowSpan={1} sx={{ bgcolor: 'grey.300' }} colSpan={3}>
               Strike Price
             </TableCell>
             <TableCell
@@ -84,6 +84,9 @@ const OptionsTable = ({
             <TableCell align="right">LTP</TableCell>
             <TableCell align="right">Theo.</TableCell>
             <TableCell align="right">Diff (%)</TableCell>
+            <TableCell align="right">Strike Price</TableCell>
+            <TableCell align="center">Parity Diff</TableCell>
+            <TableCell align="right">Strike Price</TableCell>
 
             {/* Put Headers */}
             <TableCell align="right">Diff (%)</TableCell>
@@ -125,6 +128,7 @@ const OptionsTable = ({
                 formatNumber={formatNumber}
                 formatChange={formatChange}
                 formatPriceDifference={formatPriceDifference}
+                selectedExpiry={selectedExpiry}
               />
             );
           })}

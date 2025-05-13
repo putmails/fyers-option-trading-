@@ -109,3 +109,27 @@ export function getOptionType(option) {
   const type = option.optionType || option.type;
   return type === 'CE' || type.toUpperCase() === 'CALL' ? 'call' : 'put';
 }
+
+export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryDate, r = 0.065) {
+  const today = new Date();
+const expiry = new Date(expiryDate * 1000); // Convert to milliseconds
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const T = daysToYears((expiry - today) / msPerDay);
+
+  const theoreticalDiff = spot - strike * Math.exp(-r * T);
+  const actualDiff = callLTP - putLTP;
+
+  const deviation = actualDiff - theoreticalDiff;
+
+  return deviation.toFixed(2);
+  // return {
+  //   strike,
+  //   callLTP,
+  //   putLTP,
+  //   theoreticalDiff: theoreticalDiff.toFixed(2),
+  //   actualDiff: actualDiff.toFixed(2),
+  //   deviation: deviation.toFixed(2),
+  //   T: T.toFixed(4),
+  //   alert: Math.abs(deviation) > 5  // ₹5 threshold
+  // };
+}

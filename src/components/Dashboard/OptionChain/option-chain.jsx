@@ -45,18 +45,16 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     setSelectedRow,
   } = useOptionStore();
 
-  const intervalRef = useRef(null)
+  const intervalRef = useRef(null);
   // Fetch data when component mounts or symbol changes
   useEffect(() => {
-    if (selectedSymbol || selectedExpiry) {
+    if (selectedSymbol || selectedExpiry.value) {
       console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
       fetchOptionChain(selectedSymbol, selectedExpiry);
-      clearInterval(intervalRef.current)
+      clearInterval(intervalRef.current);
       intervalRef.current = setInterval(() => {
-
         fetchOptionChain(selectedSymbol);
-      }
-      , 60000); 
+      }, 60000);
     }
 
     return () => clearInterval(intervalRef.current);
@@ -99,7 +97,8 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
 
       // Get the current expiry date
       const expiryDate =
-        expiryDates.find((date) => date.value === selectedExpiry.value)?.label || '';
+        expiryDates.find((date) => date.value === selectedExpiry.value)
+          ?.label || '';
 
       // Pass to parent component
       if (onOptionSelect && option) {
@@ -121,7 +120,7 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     if (difference === null || difference === undefined) return null;
 
     const isOverpriced = difference > 0;
-    const color = isOverpriced ? 'success.main' :'error.main';
+    const color = isOverpriced ? 'success.main' : 'error.main';
     const prefix = isOverpriced ? '+' : '';
 
     return (
@@ -162,19 +161,25 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
       </Box>
 
       {/* Controls */}
-      <ControlPanel />
+      <Box sx={{display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',}}>
+        <ControlPanel />
 
-      {/* Support/Resistance Levels */}
-      <SupportResistanceDisplay />
+        <Box>
+          {/* Support/Resistance Levels */}
+          <SupportResistanceDisplay />
 
-      {/* Volatility Information */}
-      <VolatilityInfo />
+          {/* Volatility Information */}
+          <VolatilityInfo />
 
-      {/* Trading Opportunities Summary */}
-      <OpportunitiesSummary tradingOpportunities={tradingOpportunities} />
+          {/* Trading Opportunities Summary */}
+          <OpportunitiesSummary tradingOpportunities={tradingOpportunities} />
 
-      {/* Underlying asset info */}
-      <UnderlyingInfo />
+          {/* Underlying asset info */}
+          <UnderlyingInfo />
+        </Box>
+      </Box>
 
       {/* Error message */}
       {error && (
