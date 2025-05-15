@@ -130,9 +130,9 @@ const Dashboard = () => {
                       )}
                       
                       <OptionDetails 
-                        option={selectedOption} 
-                        underlying={underlyingAsset}
-                        expiryDate={selectedExpiryDate }
+                        // option={selectedOption} 
+                        // underlying={underlyingAsset}
+                        // expiryDate={selectedExpiryDate }
                       />
                     </Box>
                   </Grid>

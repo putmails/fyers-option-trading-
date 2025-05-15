@@ -43,7 +43,8 @@ const useOptionStore = create((set, get) => ({
     putOpportunities: [],
   },
   selectedOptionType: null,
-  selectedRow: null,
+  selectedRowStrikePrice: null,
+  selectedOptionDetail: null,
   selectedSymbol: availableSymbols[1].value, // Default to the first symbol in the list
   selectedExpiry: {
     label: null,
@@ -89,7 +90,9 @@ const useOptionStore = create((set, get) => ({
   setSelectedOptionType: (optionType) =>
     set({ selectedOptionType: optionType }),
 
-  setSelectedRow: (row) => set({ selectedRow: row }),
+  setSelectedRowStrikePrice: (strikePrice) => set({ selectedRowStrikePrice: strikePrice }),
+
+  setSelectedOptionDetail: (optionDetail) => set({ selectedOptionDetail: optionDetail }),
 
   // Update option chain data
   setOptionChainData: (data, formattedData) =>
@@ -187,7 +190,7 @@ const useOptionStore = create((set, get) => ({
             },
           });
 
-          const optionsWithTheoreticalPrices = sortedOptions.map((option) =>
+          const optionsWithTheoreticalPrices = sortedOptions.slice(0,4).map((option) =>
             calculateOptionCallPutPrice(
               option,
               formattedData.underlying,
@@ -274,8 +277,8 @@ const useOptionStore = create((set, get) => ({
 
         // Reset selection
         set({
-          selectedRow: null,
-          setSelectedOptionType: null,
+          selectedRowStrikePrice: null,
+          selectedOptionType: null,
         });
       }
 

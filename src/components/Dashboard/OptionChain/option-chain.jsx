@@ -27,13 +27,12 @@ import { ChangeFormat } from './format-change';
 /**
  * Main component for option chain analysis
  */
-const OptionChain = React.memo(({ onOptionSelect }) => {
+const OptionChain = React.memo(() => {
   const {
     fetchOptionChain,
     selectedSymbol,
     error,
     isLoading,
-    expiryDates,
     selectedExpiry,
     underlying,
     selectedRow,
@@ -42,7 +41,8 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
     enhancedOptions,
     tradingOpportunities,
     setSelectedOptionType,
-    setSelectedRow,
+    setSelectedRowStrikePrice,
+    setSelectedOptionDetail
   } = useOptionStore();
 
   const intervalRef = useRef(null);
@@ -89,30 +89,21 @@ const OptionChain = React.memo(({ onOptionSelect }) => {
   // Handle option selection
   const handleOptionSelect = useCallback(
     (row, optionType) => {
-      setSelectedRow(row.strikePrice);
+      console.log("🚀 ~ OptionChain ~ optionType:", optionType)
+      console.log("🚀 ~ OptionChain ~ row:", row)
+      setSelectedRowStrikePrice?.(row.strikePrice);
       setSelectedOptionType(optionType);
 
       // Get the selected option data
-      const option = optionType === 'call' ? row.call : row.put;
+      const optionDetail = optionType === 'call' ? row.call : row.put;
+      setSelectedOptionDetail(optionDetail);
 
-      // Get the current expiry date
-      const expiryDate =
-        expiryDates.find((date) => date.value === selectedExpiry.value)
-          ?.label || '';
-
-      // Pass to parent component
-      if (onOptionSelect && option) {
-        onOptionSelect(option, underlying, expiryDate);
-      }
+      // // Pass to parent component
+      // if (onOptionSelect && optionDetail) {
+      //   onOptionSelect(optionDetail, underlying, selectedExpiry);
+      // }
     },
-    [
-      setSelectedRow,
-      setSelectedOptionType,
-      expiryDates,
-      onOptionSelect,
-      selectedExpiry,
-      underlying,
-    ]
+    [setSelectedRowStrikePrice, setSelectedOptionType, setSelectedOptionDetail]
   );
 
   // Format price difference for display
