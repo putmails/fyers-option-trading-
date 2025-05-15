@@ -1,4 +1,5 @@
 import { RISK_FREE_INTEREST, THRESHOLD_PERCENT, TOP_STRIKE_COUNT } from './constant';
+import { getTimeToExpiry } from './optionPricingUtils';
 import { calculateGreeks, calculateOptionPrice } from './options-helper';
 
 /**
@@ -150,16 +151,6 @@ export const estimateImpliedVolatility = (
   }
 
   return count > 0 ? totalIV / count : 0.3;
-};
-
-const getTimeToExpiry = (expirySeconds) => {
-  const currentTimeMs = Date.now(); // Current time in milliseconds
-  const expiryTimeMs = Number(expirySeconds) * 1000; // Convert seconds to ms
-  const timeDiffMs = expiryTimeMs - currentTimeMs;
-
-  // Convert milliseconds to fractional years
-  const timeToExpiryYears = timeDiffMs / (365 * 24 * 60 * 60 * 1000);
-  return Math.max(timeToExpiryYears, 0); // Ensure non-negative
 };
 
 /**

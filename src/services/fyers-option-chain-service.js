@@ -61,12 +61,7 @@ export const getOptionChainData = async (
       // console.log('🚀 ~ response from API Call::', response.s);
     }
 
-    // Check for successful response
-    if (response.s === 'ok' && response.code === 200 && response.data) {
-      return response.data;
-    } else {
-      throw new Error(response.message || 'Failed to fetch option chain data');
-    }
+      return response;
   } catch (error) {
     console.error('Error fetching option chain:', error);
     throw error;

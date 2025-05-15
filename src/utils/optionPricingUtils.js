@@ -110,10 +110,12 @@ export function getOptionType(option) {
   return type === 'CE' || type.toUpperCase() === 'CALL' ? 'call' : 'put';
 }
 
-export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryDate, r = 0.065) {
-  const today = Math.floor(Date.now() / 1000);
-  const msInAYear = 365* 24 * 60 * 60 ;
-  const T = (expiryDate - today) / msInAYear;
+export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryInMS, r = 0.065) {
+  // const today = Math.floor(Date.now() / 1000);
+  // const msInAYear = 365* 24 * 60 * 60 ;
+  // const T = (expiryDate - today) / msInAYear;
+
+  const T = getTimeToExpiry(expiryInMS)
 
   const theoreticalDiff = spot - strike * Math.exp(-r * T);
   const actualDiff = callLTP - putLTP;
@@ -121,4 +123,11 @@ export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryDa
   const deviation = actualDiff - theoreticalDiff;
 
   return deviation.toFixed(2);
+}
+
+export const getTimeToExpiry = (expiryInMs) => {
+  const today = Math.floor(Date.now() / 1000);
+  const msInAYear = 365* 24 * 60 * 60 ;
+  const T = (expiryInMs - today) / msInAYear;
+  return T;
 }

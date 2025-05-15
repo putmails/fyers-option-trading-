@@ -17,6 +17,7 @@ import {
 import { calibrateHestonModel } from '../utils/optionPricingModels/heston';
 import { calculateVolatilityMetrics } from '../utils/advancedOptionsAnalysis';
 import { calculateOptionCallPutPrice } from '../services/pricingService';
+import { expiryDateTransformer } from '../utils/api.util';
 
 // Define the store using Zustand's create function
 const useOptionStore = create((set, get) => ({
@@ -90,9 +91,11 @@ const useOptionStore = create((set, get) => ({
   setSelectedOptionType: (optionType) =>
     set({ selectedOptionType: optionType }),
 
-  setSelectedRowStrikePrice: (strikePrice) => set({ selectedRowStrikePrice: strikePrice }),
+  setSelectedRowStrikePrice: (strikePrice) =>
+    set({ selectedRowStrikePrice: strikePrice }),
 
-  setSelectedOptionDetail: (optionDetail) => set({ selectedOptionDetail: optionDetail }),
+  setSelectedOptionDetail: (optionDetail) =>
+    set({ selectedOptionDetail: optionDetail }),
 
   // Update option chain data
   setOptionChainData: (data, formattedData) =>
@@ -112,20 +115,36 @@ const useOptionStore = create((set, get) => ({
   // Fetch option chain data for a symbol
   fetchOptionChain: async (symbol, expiryDateLabelAndValue) => {
     try {
-      let expiry =
-        expiryDateLabelAndValue.value ??
-        get().selectedExpiry.value ?? "";
-        console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
+      let expiry = expiryDateLabelAndValue || get().selectedExpiry || '';
+      console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
 
       set({ isLoading: false, error: null });
 
-      const rawData = await getOptionChainData(symbol, 10, expiry);
-      const formattedData = formatOptionChainData(rawData);
+      const optionChainResponse = await getOptionChainData(
+        symbol,
+        10,
+        expiry.value
+      );
+
+      if (optionChainResponse.s !== 'ok') {
+        set({
+          error:
+            optionChainResponse.message || 'Failed to fetch option chain data',
+          isLoading: false,
+          expiryDates: expiryDateTransformer(
+            optionChainResponse?.data?.expiryData
+          ),
+        });
+
+        return;
+      }
+
+      const formattedData = formatOptionChainData(optionChainResponse.data);
       const closes = await fetchHistoricalCloses(symbol, PERIOD_DAYS);
       console.log('🚀 ~ fetchOptionChain: ~ formattedData:', formattedData);
 
-      if (!expiry) expiry = formattedData.expiryDates[0].value;
-      if (formattedData && rawData) {
+      // if (!expiry) expiry = formattedData.expiryDates[0];
+      if (formattedData && optionChainResponse) {
         // Sort options by strike price in ascending order
         const sortedOptions = [...formattedData.options].sort(
           (a, b) => a.strikePrice - b.strikePrice
@@ -140,7 +159,7 @@ const useOptionStore = create((set, get) => ({
           formattedData.expiryDates.length > 0 &&
           !expiryDateLabelAndValue.value
         ) {
-          set({ selectedExpiry: formattedData.expiryDates[0] }); // TODO: Expiry date label and value can be mismatched.
+          set({ selectedExpiry: expiry }); // TODO: Expiry date label and value can be mismatched.
         }
 
         // Calculate support and resistance levels
@@ -153,7 +172,7 @@ const useOptionStore = create((set, get) => ({
           const estimatedIV = estimateImpliedVolatility(
             sortedOptions,
             spotPrice,
-            expiry
+            expiry.value
           );
           const closesDataForHV = await closes;
           // console.log("🚀 ~ fetchOptionChain: ~ closesDataForHV:", closesDataForHV)
@@ -190,7 +209,7 @@ const useOptionStore = create((set, get) => ({
             },
           });
 
-          const optionsWithTheoreticalPrices = sortedOptions.slice(0,4).map((option) =>
+          const optionsWithTheoreticalPrices = sortedOptions.map((option) =>
             calculateOptionCallPutPrice(
               option,
               formattedData.underlying,
@@ -198,7 +217,7 @@ const useOptionStore = create((set, get) => ({
                 ...get().marketConditions,
                 putCallRatio: volatilityMetrics.putCallOIRatio,
               },
-              expiry
+              expiry.value
             )
           );
 
@@ -287,7 +306,7 @@ const useOptionStore = create((set, get) => ({
         ...state,
         optionChainData: {
           formattedData: formattedData,
-          data: rawData,
+          data: optionChainResponse,
         },
         selectedSymbol: symbol,
         isLoading: false,
@@ -295,11 +314,11 @@ const useOptionStore = create((set, get) => ({
 
       // return mockData;
     } catch (error) {
+      console.log('🚀 ~ fetchOptionChain: ~ expiryDates:', error);
       set({
         error: error.message || 'Failed to fetch option chain data',
         isLoading: false,
       });
-      // throw error;
     }
   },
 

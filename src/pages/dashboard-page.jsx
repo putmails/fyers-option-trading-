@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Container, 
-  Grid, 
-  Paper, 
-  Typography, 
-  Tabs, 
+import {
+  Box,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Tabs,
   Tab,
   Card,
   CardContent,
   Divider,
   Alert,
-  Chip
+  Chip,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
@@ -29,8 +29,6 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   // State for options trading
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [underlyingAsset, setUnderlyingAsset] = useState(null);
   const [optionChainData, setOptionChainData] = useState(null);
   const [selectedExpiryDate, setSelectedExpiryDate] = useState(null);
 
@@ -50,13 +48,6 @@ const Dashboard = () => {
     setTabValue(newValue);
   };
 
-  // Handle option selection from the option chain
-  const handleOptionSelect = (option, underlying, expiryDate) => {
-    setSelectedOption(option);
-    setUnderlyingAsset(underlying);
-    setSelectedExpiryDate(expiryDate);
-  };
-
   // Handle option chain data update
   const handleOptionChainDataUpdate = (data) => {
     setOptionChainData(data);
@@ -66,18 +57,30 @@ const Dashboard = () => {
   const pcr = optionChainData ? calculatePutCallRatio(optionChainData) : null;
 
   // Mock account data
-  const accountData = {
-    availableBalance: '50,000.00',
-    usedMargin: '12,500.00',
-    availableMargin: '37,500.00',
-    totalPnL: '+1,250.00'
-  };
+  // const accountData = {
+  //   availableBalance: '50,000.00',
+  //   usedMargin: '12,500.00',
+  //   availableMargin: '37,500.00',
+  //   totalPnL: '+1,250.00',
+  // };
 
-  // Mock positions data
-  const positionsData = [
-    { symbol: 'NIFTY 25APR 18200 CE', qty: 50, avgPrice: 100.25, ltp: 120.50, pnl: '+1,012.50' },
-    { symbol: 'BANKNIFTY 25APR 44000 PE', qty: 25, avgPrice: 150.75, ltp: 140.25, pnl: '-262.50' }
-  ];
+  // // Mock positions data
+  // const positionsData = [
+  //   {
+  //     symbol: 'NIFTY 25APR 18200 CE',
+  //     qty: 50,
+  //     avgPrice: 100.25,
+  //     ltp: 120.5,
+  //     pnl: '+1,012.50',
+  //   },
+  //   {
+  //     symbol: 'BANKNIFTY 25APR 44000 PE',
+  //     qty: 25,
+  //     avgPrice: 150.75,
+  //     ltp: 140.25,
+  //     pnl: '-262.50',
+  //   },
+  // ];
 
   if (loading) {
     return <Loader message="Loading dashboard..." />;
@@ -98,46 +101,59 @@ const Dashboard = () => {
       </Typography>
 
       <Grid container spacing={3}>
-
-
         {/* Trading Interface */}
         <Grid item xs={12}>
           <Paper sx={{ width: '100%' }}>
             {/* Option Chain Tab */}
-              <Box>
-                <Grid container spacing={0}>
-                  {/* Option Chain */}
-                  <Grid item xs={12} md={8}>
-                    <OptionChain 
-                      onOptionSelect={handleOptionSelect}
-                      // onDataUpdate={handleOptionChainDataUpdate}
-                    />
-                  </Grid>
-                  {/* Option Details */}
-                  <Grid item xs={12} md={4} sx={{ borderLeft: '1px solid #e0e0e0' }}>
-                    <Box sx={{ p: 2, position: 'sticky', top: 0 }}>
-                      {pcr && (
-                        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Put-Call Ratio:
-                          </Typography>
-                          <Chip 
-                            label={pcr.toFixed(2)} 
-                            color={pcr > 1 ? 'error' : pcr < 0.5 ? 'success' : 'warning'} 
-                            size="small"
-                          />
-                        </Box>
-                      )}
-                      
-                      <OptionDetails 
-                        // option={selectedOption} 
-                        // underlying={underlyingAsset}
-                        // expiryDate={selectedExpiryDate }
-                      />
-                    </Box>
-                  </Grid>
+            <Box>
+              <Grid container spacing={0}>
+                {/* Option Chain */}
+                <Grid item xs={12} md={8}>
+                  <OptionChain />
                 </Grid>
-              </Box>
+                {/* Option Details */}
+                <Grid
+                  item
+                  xs={12}
+                  md={4}
+                  sx={{ borderLeft: '1px solid #e0e0e0' }}
+                >
+                  <Box sx={{ p: 2, position: 'sticky', top: 0 }}>
+                    {pcr && (
+                      <Box
+                        sx={{
+                          mb: 2,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Put-Call Ratio:
+                        </Typography>
+                        <Chip
+                          label={pcr.toFixed(2)}
+                          color={
+                            pcr > 1
+                              ? 'error'
+                              : pcr < 0.5
+                              ? 'success'
+                              : 'warning'
+                          }
+                          size="small"
+                        />
+                      </Box>
+                    )}
+
+                    <OptionDetails
+                    // option={selectedOption}
+                    // underlying={underlyingAsset}
+                    // expiryDate={selectedExpiryDate }
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
           </Paper>
         </Grid>
       </Grid>

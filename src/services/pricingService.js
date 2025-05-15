@@ -13,6 +13,7 @@ import {
   calculateImpliedVolatility,
   calculateDaysToExpiry,
   daysToYears,
+  getTimeToExpiry,
 } from '../utils/optionPricingUtils';
 
 /**
@@ -78,15 +79,15 @@ function calculateHybridPrice({
   ltp,
   underlyingData,
   // marketConditions,
-  expiry,
+  expiryInMs,
   type,
   hv = 0.25
   // useOnlyBS = true,
 }) {
   const S = underlyingData.ltp;
   const K = strikePrice;
-  const daysToExpiry = calculateDaysToExpiry(expiry);
-  const T = daysToYears(daysToExpiry);
+  // const daysToExpiry = calculateDaysToExpiry(expiryInMs);
+  const T = getTimeToExpiry(expiryInMs);
   const r = RISK_FREE_INTEREST ?? 0.065;
   // const moneyness = calculateMoneyness(S, K);
 
@@ -107,14 +108,13 @@ function calculateHybridPrice({
       type,
       ltp,
       underlyingPrice: S,
-      daysToExpiry,
       timeToExpiryYears: T,
       impliedVolatility,
       hybridPrice: bsPrice,
       models: {
         blackScholes: { price: bsPrice, weight: 1 },
       },
-      greeks,
+      greeks,       
       pricingDate: new Date(),
     };
   
@@ -124,7 +124,7 @@ export function calculateOptionCallPutPrice(
   option,
   underlyingData,
   marketConditions,
-  expiry,
+  expiryInMs,
   hv
 ) {
   const result = {
@@ -142,7 +142,7 @@ export function calculateOptionCallPutPrice(
     ltp: option.call.ltp,
     underlyingData,
     marketConditions,
-    expiry,
+    expiryInMs,
     type: 'call',
     hv
   });
@@ -151,7 +151,7 @@ export function calculateOptionCallPutPrice(
     ltp: option.put.ltp,
     underlyingData,
     marketConditions,
-    expiry,
+    expiryInMs,
     type: 'put',
     hv
   });

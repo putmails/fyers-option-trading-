@@ -20,11 +20,11 @@ const ControlPanel = React.memo(() => {
     selectedSymbol,
     expiryDates,
     selectedExpiry,
-    strikeCount,
+    // strikeCount,
     isLoading,
     setSelectedSymbol,
     setSelectedExpiry,
-    setStrikeCount,
+    // setStrikeCount,
   } = useOptionStore();
 
   const handleSelectSymbol = useCallback((event) => {
@@ -32,12 +32,12 @@ const ControlPanel = React.memo(() => {
   }, [setSelectedSymbol]);
 
   const handleSelectExpiry = useCallback((event) => {
-    console.log(
-      '🚀 ~ handleSelectExpiry ~ event.target.value:',
-      event.target.value
-    );
-    setSelectedExpiry(event.target.value);
-  }, [setSelectedExpiry]);
+    const selectedDateValue =event.target.value;
+    console.log("🚀 ~ handleSelectExpiry ~ selectedDateValue:", selectedDateValue)
+    const selectedDate = expiryDates.find(date => date.label === selectedDateValue)
+    console.log("🚀 ~ handleSelectExpiry ~ selectedDate:", selectedDate)
+    setSelectedExpiry(selectedDate);
+  }, [expiryDates, setSelectedExpiry]);
 
   if (availableSymbols.length === 0) return null;
   return (
@@ -64,17 +64,17 @@ const ControlPanel = React.memo(() => {
 
       <Grid item xs={12} md={4}>
         <FormControl fullWidth size="small">
-          <InputLabel id="expiry-select-label">Expiry</InputLabel>
+          <InputLabel id="expiry-select-label" className='w-fit'>Expiry</InputLabel>
           <Select
             labelId="expiry-select-label"
             id="expiry-select"
-            value={selectedExpiry.date}
+            value={selectedExpiry.label}
             label="Expiry"
             onChange={handleSelectExpiry}
             disabled={isLoading || expiryDates.length === 0}
           >
             {expiryDates.map((date) => (
-              <MenuItem key={date.value} value={date}>
+              <MenuItem key={date.value} value={date.label}>
                 {date.label}
               </MenuItem>
             ))}
@@ -82,12 +82,13 @@ const ControlPanel = React.memo(() => {
         </FormControl>
       </Grid>
 
-      <Grid item xs={12} md={4}>
+      {/* <Grid item xs={12} md={4}>
         <Box sx={{ px: 2 }}>
           <Typography gutterBottom>Strike Count: {strikeCount}</Typography>
           <Slider
             value={strikeCount}
             onChange={setStrikeCount}
+            disableSwap
             // onChangeCommitted={fetchOptionChain}
             min={1}
             max={20}
@@ -100,7 +101,7 @@ const ControlPanel = React.memo(() => {
             disabled={isLoading}
           />
         </Box>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 });

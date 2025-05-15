@@ -44,6 +44,7 @@ const OptionChain = React.memo(() => {
     setSelectedRowStrikePrice,
     setSelectedOptionDetail
   } = useOptionStore();
+  console.log("🚀 ~ useEffect ~ selectedExpiry:", selectedExpiry)
 
   const intervalRef = useRef(null);
   // Fetch data when component mounts or symbol changes
