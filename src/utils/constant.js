@@ -1,10 +1,15 @@
 export const availableSymbols = [
     { label: 'NIFTY', value: 'NSE:NIFTY50-INDEX' },
-    { label: 'BANKNIFTY', value: 'NSE:NIFTYBANK-INDEX' },
-    // { label: 'TCS', value: 'NSE:TCS-EQ' },
-    // { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
-    // { label: 'INFY', value: 'NSE:INFY-EQ' },
-    // { label: 'SBIN', value: 'NSE:SBIN-EQ' },
+    { label: 'SENSEX', value: 'BSE:SENSEX-INDEX' },
+    { label: 'BankNIFTY', value: 'NSE:NIFTYBANK-INDEX' },
+    { label: 'FinNIFTY', value: 'NSE:FINNIFTY-INDEX' },
+    { label: 'NIFTYNXT50', value: 'NSE:NIFTYNXT50-INDEX' },
+    { label: 'BANKEX', value: 'BSE:BANKEX-INDEX' },
+    { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
+    { label: 'HDFC', value: 'NSE:HDFCBANK-EQ' },
+    { label: 'TCS', value: 'NSE:TCS-EQ' },
+    { label: 'INFY', value: 'NSE:INFY-EQ' },
+    { label: 'SBIN', value: 'NSE:SBIN-EQ' },
   ]
 
 99
