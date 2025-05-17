@@ -125,9 +125,9 @@ export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryIn
   return deviation.toFixed(2);
 }
 
-export const getTimeToExpiry = (expiryInMs) => {
-  const today = Math.floor(Date.now() / 1000);
-  const msInAYear = 365* 24 * 60 * 60 ;
-  const T = (expiryInMs - today) / msInAYear;
+export const getTimeToExpiry = (expiryInSeconds) => {
+  const nowInSeconds = Date.now() / 1000;
+  const secondsInAYear = 365 * 24 * 60 * 60;
+  const T = (expiryInSeconds - nowInSeconds) / secondsInAYear;
   return T;
-}
+};

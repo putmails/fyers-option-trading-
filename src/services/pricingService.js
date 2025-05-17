@@ -11,8 +11,8 @@ import {
 } from '../utils/optionPricingModels/blackScholes';
 import {
   calculateImpliedVolatility,
-  calculateDaysToExpiry,
-  daysToYears,
+  // calculateDaysToExpiry,
+  // daysToYears,
   getTimeToExpiry,
 } from '../utils/optionPricingUtils';
 

@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { formatNumber } from '../../../utils/common.utils';
 
 // Format percentage change for display with color
-export const ChangeFormat = (change) => {
+export const ChangeFormat = ({change}) => {
   if (change === null || change === undefined) return '-';
 
   const color = change >= 0 ? 'success.main' : 'error.main';

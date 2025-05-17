@@ -166,6 +166,9 @@ export const formatOptionChainData = (data) => {
     underlying,
     expiryDates,
     options,
+    callOi: data.callOi,
+    putOi: data.putOi,
+    indiavixData: data.indiavixData
   };
 };
 

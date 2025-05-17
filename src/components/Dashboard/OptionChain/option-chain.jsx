@@ -51,10 +51,13 @@ const OptionChain = React.memo(() => {
   useEffect(() => {
     if (selectedSymbol || selectedExpiry.value) {
       console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
+
       fetchOptionChain(selectedSymbol, selectedExpiry);
+      
       clearInterval(intervalRef.current);
+      
       intervalRef.current = setInterval(() => {
-        fetchOptionChain(selectedSymbol);
+        fetchOptionChain(selectedSymbol,selectedExpiry);
       }, 60000);
     }
 

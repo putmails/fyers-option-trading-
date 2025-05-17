@@ -8,8 +8,8 @@ import { formatNumber } from '../../../utils/common.utils';
  */
 const ChainSummary = React.memo(() => {
 
-  const { optionChainData } = useOptionStore();
-  if (!optionChainData) return null;
+  const { optionChainData: {formattedData} } = useOptionStore();
+  if (!formattedData) return null;
   
   return (
     <Box sx={{ mt: 2, p: 2, borderRadius: 1, bgcolor: 'background.paper' }}>
@@ -17,13 +17,13 @@ const ChainSummary = React.memo(() => {
         <Grid item xs={6}>
           <Typography variant="body2" color="text.secondary">Total Call OI:</Typography>
           <Typography variant="body1" fontWeight="medium">
-            {formatNumber(optionChainData.callOi || 0, 0)}
+            {formatNumber(formattedData.callOi || 0, 0)}
           </Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="body2" color="text.secondary">Total Put OI:</Typography>
           <Typography variant="body1" fontWeight="medium">
-            {formatNumber(optionChainData.putOi || 0, 0)}
+            {formatNumber(formattedData.putOi || 0, 0)}
           </Typography>
         </Grid>
         <Grid item xs={6}>
@@ -32,34 +32,34 @@ const ChainSummary = React.memo(() => {
             variant="body1" 
             fontWeight="medium"
             color={
-              optionChainData.putOi && optionChainData.callOi && 
-              (optionChainData.putOi / optionChainData.callOi) > 1.2 ? 'error.main' : 
-              optionChainData.putOi && optionChainData.callOi && 
-              (optionChainData.putOi / optionChainData.callOi) < 0.8 ? 'success.main' : 
+              formattedData.putOi && formattedData.callOi && 
+              (formattedData.putOi / formattedData.callOi) > 1.2 ? 'error.main' : 
+              formattedData.putOi && formattedData.callOi && 
+              (formattedData.putOi / formattedData.callOi) < 0.8 ? 'success.main' : 
               'text.primary'
             }
           >
-            {optionChainData.putOi && optionChainData.callOi ? 
-              (optionChainData.putOi / optionChainData.callOi).toFixed(2) : 
+            {formattedData.putOi && formattedData.callOi ? 
+              (formattedData.putOi / formattedData.callOi).toFixed(2) : 
               '-'
             }
           </Typography>
         </Grid>
         
-        {optionChainData.indiavixData && (
+        {formattedData.indiavixData && (
           <Grid item xs={6}>
             <Typography variant="body2" color="text.secondary">India VIX:</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="body1" fontWeight="medium">
-                {formatNumber(optionChainData.indiavixData.ltp, 2)}
+                {formatNumber(formattedData.indiavixData.ltp, 2)}
               </Typography>
               <Typography 
                 variant="body2" 
                 sx={{ ml: 1 }}
-                color={optionChainData.indiavixData.ltpchp >= 0 ? 'success.main' : 'error.main'}
+                color={formattedData.indiavixData.ltpchp >= 0 ? 'success.main' : 'error.main'}
               >
-                ({optionChainData.indiavixData.ltpchp >= 0 ? '+' : ''}
-                {formatNumber(optionChainData.indiavixData.ltpchp, 2)}%)
+                ({formattedData.indiavixData.ltpchp >= 0 ? '+' : ''}
+                {formatNumber(formattedData.indiavixData.ltpchp, 2)}%)
               </Typography>
             </Box>
           </Grid>

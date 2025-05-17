@@ -31,14 +31,7 @@ const UnderlyingInfo = () => {
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">Change</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6">
                   <ChangeFormat change={underlying.ltpchp} />
-                </Typography>
-                <Typography variant="body2" sx={{ ml: 1 }}>
-                  ({underlying.ltpch > 0 ? '+' : ''}{formatNumber(underlying.ltpch)})
-                </Typography>
-              </Box>
             </Box>
           </Box>
         </Grid>
