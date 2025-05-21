@@ -22,7 +22,6 @@ import {
 
 import useOptionStore from '../../../store/option-store';
 import { formatNumber } from '../../../utils/common.utils';
-import { ChangeFormat } from './format-change';
 
 /**
  * Main component for option chain analysis
@@ -201,7 +200,6 @@ const OptionChain = React.memo(() => {
           getOpportunityData={getOpportunityData}
           handleOptionSelect={handleOptionSelect}
           formatNumber={formatNumber}
-          formatChange={ChangeFormat}
           formatPriceDifference={formatPriceDifference}
           selectedExpiry={selectedExpiry}
         />

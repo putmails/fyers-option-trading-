@@ -11,6 +11,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { calculateParityDeviation } from '../../../utils/optionPricingUtils';
 import { RISK_FREE_INTEREST } from '../../../utils/constant';
+import { ChangeFormat } from './format-change';
 
 /**
  * Component representing a single row in the option chain table
@@ -26,7 +27,6 @@ const OptionRow = ({
   putOpportunity,
   handleOptionSelect,
   formatNumber,
-  formatChange,
   formatPriceDifference,
   selectedExpiry,
 }) => {
@@ -42,6 +42,7 @@ const OptionRow = ({
   const callVolatility = row.call?.volatilityAnalysis;
   const putVolatility = row.put?.volatilityAnalysis;
 
+  const oiDiff = row.call?.oi - row.put?.oi;
   // Determine row background color based on support/resistance
   let rowBgColor = '';
   if (isSelected) {
@@ -54,6 +55,10 @@ const OptionRow = ({
     rowBgColor = 'rgba(229, 115, 115, 0.15)';
   } else if (row.strikePrice % 2 === 0) {
     rowBgColor = 'rgba(0, 0, 0, 0.02)';
+  } else if (oiDiff > 150000) {
+    rowBgColor = 'rgba(211, 104, 104, 0.1)';
+  } else if (oiDiff <= -150000) {
+    rowBgColor = 'rgba(47, 136, 209, 0.1)';
   }
 
   const parityDeviation = calculateParityDeviation(
@@ -86,7 +91,7 @@ const OptionRow = ({
           backgroundColor: callITM ? 'rgba(200, 230, 201, 0.3)' : 'transparent',
         }}
       >
-        {row.call?.oichp ? formatChange(row.call.oichp) : '-'}
+        {row.call?.oichp ? <ChangeFormat change={row.call.oichp} /> : '-'}
       </TableCell>
       <TableCell
         align="right"
@@ -403,7 +408,7 @@ const OptionRow = ({
           backgroundColor: putITM ? 'rgba(200, 230, 201, 0.3)' : 'transparent',
         }}
       >
-        {row.put?.oichp ? formatChange(row.put.oichp) : '-'}
+        {row.put?.oichp ? <ChangeFormat change={row.put.oichp} /> : '-'}
       </TableCell>
       <TableCell
         align="right"

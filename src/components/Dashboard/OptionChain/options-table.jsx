@@ -25,7 +25,6 @@ const OptionsTable = ({
   getOpportunityData,
   handleOptionSelect,
   formatNumber,
-  formatChange,
   formatPriceDifference,
   selectedExpiry,
 }) => {
@@ -126,7 +125,6 @@ const OptionsTable = ({
                 putOpportunity={putOpportunity}
                 handleOptionSelect={handleOptionSelect}
                 formatNumber={formatNumber}
-                formatChange={formatChange}
                 formatPriceDifference={formatPriceDifference}
                 selectedExpiry={selectedExpiry}
               />
