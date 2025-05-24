@@ -1,4 +1,4 @@
-import { RISK_FREE_INTEREST, THRESHOLD_PERCENT, TOP_STRIKE_COUNT } from './constant';
+import { DAYS_IN_A_YEAR, RISK_FREE_INTEREST, THRESHOLD_PERCENT, TOP_STRIKE_COUNT } from './constant';
 import { getTimeToExpiry } from './optionPricingUtils';
 import { calculateGreeks, calculateOptionPrice } from './options-helper';
 
@@ -231,7 +231,7 @@ export const calculateTheoreticalPrices = (
     );
   }
 
-  const timeToExpiry = daysToExpiry / 365; // Convert to years
+  const timeToExpiry = daysToExpiry / DAYS_IN_A_YEAR; // Convert to years
 
   // Enhance each option with theoretical price
   return optionsData.map((option) => {

@@ -18,3 +18,4 @@ export const availableSymbols = [
   export const RISK_FREE_INTEREST = 0.065;
   export const FETCH_DUMMY_DATA = false; // Set to true to use cached data
   export const THRESHOLD_PERCENT = 5
+  export const DAYS_IN_A_YEAR = 365

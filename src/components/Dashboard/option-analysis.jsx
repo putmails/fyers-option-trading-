@@ -23,6 +23,7 @@ import {
   calculateOptionPrice, 
   calculateGreeks
 } from '../../utils/options-helper';
+import { DAYS_IN_A_YEAR } from '../../utils/constant';
 
 const OptionAnalysis = ({ option, underlying, expiryDate }) => {
   const [spotPriceChange, setSpotPriceChange] = useState(0);
@@ -76,7 +77,7 @@ const OptionAnalysis = ({ option, underlying, expiryDate }) => {
     const scenarios = [];
     
     // Current scenario
-    const baseTimeToExpiry = daysToExpiry / 365;
+    const baseTimeToExpiry = daysToExpiry / DAYS_IN_A_YEAR;
     const baseOptionPrice = calculateOptionPrice(
       type,
       spotPrice,
@@ -141,7 +142,7 @@ const OptionAnalysis = ({ option, underlying, expiryDate }) => {
     // Time decay scenario
     if (daysToExpiry > 1) {
       const newDaysToExpiry = Math.max(1, daysToExpiry - 7); // 1 week less
-      const newTimeToExpiry = newDaysToExpiry / 365;
+      const newTimeToExpiry = newDaysToExpiry / DAYS_IN_A_YEAR;
       const newOptionPrice = calculateOptionPrice(
         type,
         spotPrice,
@@ -206,7 +207,7 @@ const OptionAnalysis = ({ option, underlying, expiryDate }) => {
     if (spotPriceChange !== 0 || daysToExpiryChange !== 0 || volatilityChange !== 0) {
       const newSpotPrice = spotPrice * (1 + spotPriceChange / 100);
       const newDaysToExpiry = Math.max(1, daysToExpiry - daysToExpiryChange);
-      const newTimeToExpiry = newDaysToExpiry / 365;
+      const newTimeToExpiry = newDaysToExpiry / DAYS_IN_A_YEAR;
       const newVolatility = Math.max(0.1, impliedVolatility * (1 + volatilityChange / 100));
       
       const newOptionPrice = calculateOptionPrice(

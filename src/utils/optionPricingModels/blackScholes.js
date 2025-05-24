@@ -3,6 +3,8 @@
  * Implements the classic Black-Scholes-Merton model for European options
  */
 
+import { DAYS_IN_A_YEAR } from "../constant";
+
 /**
  * Calculate the cumulative distribution function for standard normal distribution
  * @param {number} x - The value to calculate CDF for
@@ -121,7 +123,7 @@ function calculateGreeks(S, K, T, r, sigma, type) {
     theta = -S * pdf(d1) * sigma / (2 * Math.sqrt(T)) + r * K * Math.exp(-r * T) * normalCDF(-d2);
   }
   // Convert from yearly to daily theta
-  theta = theta / 365;
+  theta = theta / DAYS_IN_A_YEAR;
   
   // Calculate vega (same for calls and puts)
   const vega = S * Math.sqrt(T) * pdf(d1) / 100; // Divide by 100 for 1% change

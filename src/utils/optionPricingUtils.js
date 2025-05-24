@@ -2,6 +2,7 @@
  * Helper functions for option pricing and analysis
  */
 
+import { DAYS_IN_A_YEAR } from "./constant";
 import { calculateCallPrice, calculatePutPrice } from "./optionPricingModels/blackScholes";
 
 /**
@@ -99,7 +100,7 @@ export function calculateDaysToExpiry(expiryDate) {
  * Convert days to expiration to years
  */
 export function daysToYears(days) {
-  return Math.max(days / 365, 0.00001);
+  return Math.max(days / DAYS_IN_A_YEAR, 0.00001);
 }
 
 /**
@@ -111,9 +112,6 @@ export function getOptionType(option) {
 }
 
 export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryInMS, r = 0.065) {
-  // const today = Math.floor(Date.now() / 1000);
-  // const msInAYear = 365* 24 * 60 * 60 ;
-  // const T = (expiryDate - today) / msInAYear;
 
   const T = getTimeToExpiry(expiryInMS)
 
@@ -127,7 +125,7 @@ export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryIn
 
 export const getTimeToExpiry = (expiryInSeconds) => {
   const nowInSeconds = Date.now() / 1000;
-  const secondsInAYear = 365 * 24 * 60 * 60;
+  const secondsInAYear = DAYS_IN_A_YEAR * 24 * 60 * 60;
   const T = (expiryInSeconds - nowInSeconds) / secondsInAYear;
   return T;
 };
