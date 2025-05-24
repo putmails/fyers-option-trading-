@@ -217,7 +217,8 @@ const useOptionStore = create((set, get) => ({
                 ...get().marketConditions,
                 putCallRatio: volatilityMetrics.putCallOIRatio,
               },
-              expiry.value
+              expiry.value,
+              estimatedIV
             )
           );
 

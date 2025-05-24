@@ -81,7 +81,7 @@ function calculateHybridPrice({
   // marketConditions,
   expiryInMs,
   type,
-  hv = 0.25
+  iv
   // useOnlyBS = true,
 }) {
   const S = underlyingData.ltp;
@@ -98,8 +98,8 @@ function calculateHybridPrice({
   
   const bsPrice =
   type === 'call'
-  ? calculateCallPrice(S, K, T, r, hv)
-  : calculatePutPrice(S, K, T, r, hv);
+  ? calculateCallPrice(S, K, T, r, iv)
+  : calculatePutPrice(S, K, T, r, iv);
   
   // console.log(`🚀 ~ltp :: ${ltp} bsPrice: ${bsPrice}`);
   // if (useOnlyBS) {
@@ -125,7 +125,7 @@ export function calculateOptionCallPutPrice(
   underlyingData,
   marketConditions,
   expiryInMs,
-  hv
+  iv
 ) {
   const result = {
     ...option,
@@ -144,7 +144,7 @@ export function calculateOptionCallPutPrice(
     marketConditions,
     expiryInMs,
     type: 'call',
-    hv
+    iv
   });
   const putHybridPrice = calculateHybridPrice({
     strikePrice: option.strikePrice,
@@ -153,7 +153,7 @@ export function calculateOptionCallPutPrice(
     marketConditions,
     expiryInMs,
     type: 'put',
-    hv
+    iv
   });
   return {
     ...result,
