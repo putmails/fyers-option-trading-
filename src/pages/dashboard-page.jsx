@@ -20,6 +20,7 @@ import OptionDetails from '../components/Dashboard/option-details';
 import Loader from '../components/common/loader-component';
 import { calculatePutCallRatio } from '../utils/options-helper';
 import OptionChain from '../components/Dashboard/OptionChain';
+import SentimentSummary from '../components/Dashboard/sentiment-summary';
 
 const Dashboard = () => {
   const { isLoggedIn, user } = useAuth();
@@ -104,6 +105,8 @@ const Dashboard = () => {
         {/* Trading Interface */}
         <Grid item xs={12}>
           <Paper sx={{ width: '100%' }}>
+            {/* Sentiment Summary */}
+            <SentimentSummary />
             {/* Option Chain Tab */}
             <Box>
               <Grid container spacing={0}>
