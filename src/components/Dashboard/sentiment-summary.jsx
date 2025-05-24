@@ -32,22 +32,50 @@ const SentimentSummary = () => {
     let atmOption = formattedData.options.reduce((prev, curr) =>
       Math.abs(curr.strikePrice - spot) < Math.abs(prev.strikePrice - spot) ? curr : prev
     );
-    // IV and HV
-    const iv = volatilityData?.impliedVolatility;
-    const hv = volatilityData?.historicalVolatility;
-    const ivhv = hv ? iv / hv : null;
-    // PCR
-    const callOi = formattedData.options.reduce((acc, o) => acc + (o.call?.openInterest || 0), 0);
-    const putOi = formattedData.options.reduce((acc, o) => acc + (o.put?.openInterest || 0), 0);
-    const pcr = callOi && putOi ? putOi / callOi : null;
-    // Arbitrage at ATM
-    const arbitrage = calculateParityDeviation(
-      atmOption.call?.ltp,
-      atmOption.put?.ltp,
-      spot,
-      atmOption.strikePrice,
+    // IV and HV (ATM, robust)
+    let iv = null, hv = null, ivhv = null;
+    // Prefer ATM option's IV, fallback to average of all ATM call/put IVs if missing
+    if (atmOption.call?.impliedVolatility && atmOption.put?.impliedVolatility) {
+      iv = (atmOption.call.impliedVolatility + atmOption.put.impliedVolatility) / 2;
+    } else {
+      // Try to average all ATM-like strikes (within 1% of spot)
+      const atmBand = formattedData.options.filter(opt => Math.abs(opt.strikePrice - spot) < spot * 0.01);
+      const ivs = [];
+      atmBand.forEach(opt => {
+        if (opt.call?.impliedVolatility) ivs.push(opt.call.impliedVolatility);
+        if (opt.put?.impliedVolatility) ivs.push(opt.put.impliedVolatility);
+      });
+      if (ivs.length) {
+        iv = ivs.reduce((a, b) => a + b, 0) / ivs.length;
+      } else {
+        iv = volatilityData?.impliedVolatility;
+      }
+    }
+    hv = volatilityData?.historicalVolatility;
+    ivhv = hv ? iv / hv : null;
+    // PCR (total OI, robust)
+    const callOi = formattedData.options.reduce((acc, o) => acc + (o.call?.oi ?? o.call?.openInterest ?? 0), 0);
+    const putOi = formattedData.options.reduce((acc, o) => acc + (o.put?.oi ?? o.put?.openInterest ?? 0), 0);
+    const pcr = callOi > 0 ? putOi / callOi : null;
+    // Put-Call Arbitrage at ATM (use put-call parity, fallback to 0 if missing)
+    let arbitrage = 0;
+    if (
+      atmOption.call?.ltp != null &&
+      atmOption.put?.ltp != null &&
+      atmOption.strikePrice != null &&
+      spot != null &&
       formattedData.expiryDate
-    );
+    ) {
+      arbitrage = Number(
+        calculateParityDeviation(
+          atmOption.call.ltp,
+          atmOption.put.ltp,
+          spot,
+          atmOption.strikePrice,
+          formattedData.expiryDate
+        )
+      );
+    }
     // Volume at ATM
     const volume = {
       CE: atmOption.call?.volume || 0,

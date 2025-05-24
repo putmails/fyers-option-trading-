@@ -18,6 +18,7 @@ import { calibrateHestonModel } from '../utils/optionPricingModels/heston';
 import { calculateVolatilityMetrics } from '../utils/advancedOptionsAnalysis';
 import { calculateOptionCallPutPrice } from '../services/pricingService';
 import { expiryDateTransformer } from '../utils/api.util';
+import { calculateParityDeviation } from '../utils/optionPricingUtils';
 
 // Define the store using Zustand's create function
 const useOptionStore = create((set, get) => ({
@@ -180,12 +181,12 @@ const useOptionStore = create((set, get) => ({
           const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
           // console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
-          // Calculate volatility skew
-          const skewAnalysis = {
-            skewRatio: estimatedIV / estimatedHV,
-            skewDifference: estimatedIV - estimatedHV,
-            skewPercentage: ((estimatedIV - estimatedHV) / estimatedHV) * 100,
-          };
+          // Calculate volatility skew (now handled inline in set)
+          // const skewAnalysis = {
+          //   skewRatio: estimatedIV / estimatedHV,
+          //   skewDifference: estimatedIV - estimatedHV,
+          //   skewPercentage: ((estimatedIV - estimatedHV) / estimatedHV) * 100,
+          // };
 
           // Calculate support/resistance levels
           const levels = calculateSupportResistance(
@@ -194,18 +195,72 @@ const useOptionStore = create((set, get) => ({
             estimatedIV
           );
 
+          // --- Improved IV, HV, PCR, Arbitrage Calculation ---
+          // ATM IV: average of ATM call/put IVs if both present, else average all near-ATM IVs, else fallback
+          let atmIV = null;
+          let atmHV = estimatedHV;
+          let atmPCR = null;
+          let atmArbitrage = 0;
+          // Find ATM option (closest strike to spot)
+          const atmOption = sortedOptions.reduce((prev, curr) =>
+            Math.abs(curr.strikePrice - spotPrice) < Math.abs(prev.strikePrice - spotPrice) ? curr : prev
+          );
+          // ATM IV
+          if (atmOption.call?.impliedVolatility && atmOption.put?.impliedVolatility) {
+            atmIV = (atmOption.call.impliedVolatility + atmOption.put.impliedVolatility) / 2;
+          } else {
+            // Try to average all near-ATM IVs (within 1% of spot)
+            const atmBand = sortedOptions.filter(opt => Math.abs(opt.strikePrice - spotPrice) < spotPrice * 0.01);
+            const ivs = [];
+            atmBand.forEach(opt => {
+              if (opt.call?.impliedVolatility) ivs.push(opt.call.impliedVolatility);
+              if (opt.put?.impliedVolatility) ivs.push(opt.put.impliedVolatility);
+            });
+            if (ivs.length) {
+              atmIV = ivs.reduce((a, b) => a + b, 0) / ivs.length;
+            } else {
+              atmIV = estimatedIV;
+            }
+          }
+          // ATM PCR (total OI)
+          const callOi = sortedOptions.reduce((acc, o) => acc + (o.call?.oi ?? o.call?.openInterest ?? 0), 0);
+          const putOi = sortedOptions.reduce((acc, o) => acc + (o.put?.oi ?? o.put?.openInterest ?? 0), 0);
+          atmPCR = callOi > 0 ? putOi / callOi : null;
+          // ATM Arbitrage (put-call parity deviation)
+          if (
+            atmOption.call?.ltp != null &&
+            atmOption.put?.ltp != null &&
+            atmOption.strikePrice != null &&
+            spotPrice != null &&
+            formattedData?.expiryDate
+          ) {
+            atmArbitrage = Number(
+              calculateParityDeviation(
+                atmOption.call.ltp,
+                atmOption.put.ltp,
+                spotPrice,
+                atmOption.strikePrice,
+                formattedData.expiryDate
+              )
+            );
+          }
+
           set({
             volatilityData: {
               ...get().volatilityData,
-              impliedVolatility: estimatedIV,
-              historicalVolatility: estimatedHV,
-              volatilitySkew: skewAnalysis,
+              impliedVolatility: atmIV,
+              historicalVolatility: atmHV,
+              volatilitySkew: {
+                skewRatio: atmHV ? atmIV / atmHV : null,
+                skewDifference: atmHV ? atmIV - atmHV : null,
+                skewPercentage: atmHV ? ((atmIV - atmHV) / atmHV) * 100 : null,
+              },
             },
             supportResistance: levels,
-            // FIXME: marketConditions should be updated from API in case of useOnlyBS is false
             marketConditions: {
               ...get().marketConditions,
-              putCallRatio: volatilityMetrics.putCallOIRatio,
+              putCallRatio: atmPCR,
+              arbitrage: atmArbitrage,
             },
           });
 
