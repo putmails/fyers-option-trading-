@@ -7,7 +7,7 @@ const Header = () => {
   const { isLoggedIn, logout } = useAuth();
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={{width: '100%', backgroundColor: '#2E7D32'}}> 
       <Toolbar>
         <Typography
           variant="h6"

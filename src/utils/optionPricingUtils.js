@@ -119,8 +119,9 @@ export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryIn
   const actualDiff = callLTP - putLTP;
 
   const deviation = actualDiff - theoreticalDiff;
+  const deviationPercentage = Math.abs(theoreticalDiff) >= 10 ? (deviation / theoreticalDiff) * 100 : 0;
 
-  return deviation.toFixed(2);
+  return {parityDeviation: deviation.toFixed(2), deviationPercentage: deviationPercentage.toFixed(2)};
 }
 
 export const getTimeToExpiry = (expiryInSeconds) => {

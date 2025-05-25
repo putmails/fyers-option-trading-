@@ -96,7 +96,16 @@ const Dashboard = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Container 
+      maxWidth={false} 
+      sx={{ 
+        mt: 4, 
+        mb: 4, 
+        mx: 0,
+        px: { xs: 1, sm: 2, md: 3 }, // Responsive padding
+        width: '100%',
+      }}
+    >
       <Typography variant="h4" gutterBottom>
         Trading Dashboard
       </Typography>

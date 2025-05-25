@@ -61,7 +61,7 @@ const OptionRow = ({
     rowBgColor = 'rgba(47, 136, 209, 0.1)';
   }
 
-  const parityDeviation = calculateParityDeviation(
+  const {parityDeviation, deviationPercentage} = calculateParityDeviation(
     row.call?.ltp,
     row.put?.ltp,
     underlying?.ltp,
@@ -250,7 +250,7 @@ const OptionRow = ({
           backgroundColor: putITM ? 'rgba(200, 230, 201, 0.3)' : 'transparent',
         }}
       >
-        {parityDeviation}
+        {parityDeviation}-({deviationPercentage})%
       </TableCell>
       {/* Strike Price */}
       <TableCell

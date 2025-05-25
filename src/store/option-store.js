@@ -122,7 +122,7 @@ const useOptionStore = create((set, get) => ({
 
       const optionChainResponse = await getOptionChainData(
         symbol,
-        10,
+        8,
         expiry.value
       );
 
