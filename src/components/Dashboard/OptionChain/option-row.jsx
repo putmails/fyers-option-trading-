@@ -48,7 +48,7 @@ const OptionRow = ({
   if (isSelected) {
     rowBgColor = 'rgba(25, 118, 210, 0.08)';
   } else if (atmStrike) {
-    rowBgColor = 'rgba(255, 236, 179, 0.4)';
+    rowBgColor = 'rgba(208, 179, 255, 0.4)';
   } else if (isSupport) {
     rowBgColor = 'rgba(129, 199, 132, 0.15)';
   } else if (isResistance) {
@@ -248,9 +248,13 @@ const OptionRow = ({
         align="center"
         sx={{
           backgroundColor: putITM ? 'rgba(200, 230, 201, 0.3)' : 'transparent',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        {parityDeviation}-({deviationPercentage})%
+        <Typography variant="body2" color={`${parityDeviation >= 0 ? 'success.main' : 'error.main'}`}>{parityDeviation}</Typography>
+        <Typography variant="body2" color={`${parityDeviation >= 0 ? 'success.main' : 'error.main'}`}>&nbsp;&nbsp;({deviationPercentage})%</Typography>
       </TableCell>
       {/* Strike Price */}
       <TableCell

@@ -96,11 +96,11 @@ const Dashboard = () => {
   }
 
   return (
-    <Container 
-      maxWidth={false} 
-      sx={{ 
-        mt: 4, 
-        mb: 4, 
+    <Container
+      maxWidth={false}
+      sx={{
+        mt: 4,
+        mb: 4,
         mx: 0,
         px: { xs: 1, sm: 2, md: 3 }, // Responsive padding
         width: '100%',
@@ -118,53 +118,8 @@ const Dashboard = () => {
             <SentimentSummary />
             {/* Option Chain Tab */}
             <Box>
-              <Grid container spacing={0}>
-                {/* Option Chain */}
-                <Grid item xs={12} md={8}>
-                  <OptionChain />
-                </Grid>
-                {/* Option Details */}
-                <Grid
-                  item
-                  xs={12}
-                  md={4}
-                  sx={{ borderLeft: '1px solid #e0e0e0' }}
-                >
-                  <Box sx={{ p: 2, position: 'sticky', top: 0 }}>
-                    {pcr && (
-                      <Box
-                        sx={{
-                          mb: 2,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          Put-Call Ratio:
-                        </Typography>
-                        <Chip
-                          label={pcr.toFixed(2)}
-                          color={
-                            pcr > 1
-                              ? 'error'
-                              : pcr < 0.5
-                              ? 'success'
-                              : 'warning'
-                          }
-                          size="small"
-                        />
-                      </Box>
-                    )}
-
-                    <OptionDetails
-                    // option={selectedOption}
-                    // underlying={underlyingAsset}
-                    // expiryDate={selectedExpiryDate }
-                    />
-                  </Box>
-                </Grid>
-              </Grid>
+              <OptionChain />
+              <OptionDetails />
             </Box>
           </Paper>
         </Grid>

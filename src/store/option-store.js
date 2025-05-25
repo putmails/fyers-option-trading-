@@ -39,6 +39,7 @@ const useOptionStore = create((set, get) => ({
     resistance: [],
   },
   enhancedOptions: [],
+  atmPriceDetails: null, // Details of the ATM option
   tradingOpportunities: {
     callOpportunities: [],
     putOpportunities: [],
@@ -280,10 +281,14 @@ const useOptionStore = create((set, get) => ({
           const sortedEnhancedOptions = [...optionsWithVolatilityAnalysis].sort(
             (a, b) => a.strikePrice - b.strikePrice
           );
-          console.log(
-            '🚀 ~ fetchOptionChain: ~ sortedEnhancedOptions:',
-            sortedEnhancedOptions
+
+          const atmPriceDetails = sortedEnhancedOptions.reduce((prev, curr) =>
+            Math.abs(curr?.strikePrice - formattedData.underlying.ltp) < Math.abs(prev?.strikePrice - formattedData.underlying.ltp) ? curr : prev
           );
+          // console.log(
+          //   '🚀 ~ fetchOptionChain: ~ sortedEnhancedOptions:',
+          //   sortedEnhancedOptions
+          // );
           // Identify trading opportunities
           const opportunities = identifyTradingOpportunities(
             sortedEnhancedOptions
@@ -292,6 +297,7 @@ const useOptionStore = create((set, get) => ({
           set({
             enhancedOptions: sortedEnhancedOptions,
             tradingOpportunities: opportunities,
+            atmPriceDetails: atmPriceDetails
           });
         }
 
