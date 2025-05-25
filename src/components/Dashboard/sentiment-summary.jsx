@@ -15,7 +15,7 @@ function getSentiment(value, type) {
     case 'PCR':
       return value > 1 ? 'bearish' : value < 0.8 ? 'bullish' : 'neutral';
     case 'Arbitrage':
-      return value > 0 ? 'bullish' : value < 0 ? 'bearish' : 'neutral';
+      return value.parityDeviation > 5 ? 'bearish' : value < 0 ? 'bullish' : 'neutral';
     case 'Volume':
       return value.CE > value.PE ? 'bullish' : value.CE < value.PE ? 'bearish' : 'neutral';
     case 'OIChange':
@@ -88,7 +88,7 @@ const SentimentSummary = () => {
                 <TableCell>{label === 'OIChange' ? 'Total OI Change % (ATM)' : label === 'Volume' ? 'Volume (ATM CE/PE)' : label}</TableCell>
                 <TableCell>
                   {typeof value === 'object' ?
-                    label === 'Volume' ? `${formatNumber(value?.CE)} / ${formatNumber(value?.PE)}` : `${value?.CE?.toFixed(2) ?? 0} / ${value?.PE?.toFixed(2) ?? 0}`
+                    label === 'Volume' ? `${formatNumber(value?.CE)} / ${formatNumber(value?.PE)}` : label === 'Arbitrage' ? `${value.parityDeviation} (${value.deviationPercentage})` : '-'  
                     : value != null ? Number(value).toFixed(2) : '-'}
                 </TableCell>
                 <TableCell sx={{ textTransform: 'capitalize' }}>{sentiment}</TableCell>
