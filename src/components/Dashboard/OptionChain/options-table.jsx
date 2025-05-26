@@ -27,6 +27,7 @@ const OptionsTable = ({
   formatNumber,
   formatPriceDifference,
   selectedExpiry,
+  atmPriceDetails
 }) => {
   if (!enhancedOptions || enhancedOptions.length === 0) return null;
 
@@ -127,6 +128,7 @@ const OptionsTable = ({
                 formatNumber={formatNumber}
                 formatPriceDifference={formatPriceDifference}
                 selectedExpiry={selectedExpiry}
+                atmPriceDetails={atmPriceDetails}
               />
             );
           })}

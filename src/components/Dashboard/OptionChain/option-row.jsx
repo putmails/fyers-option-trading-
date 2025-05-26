@@ -29,12 +29,9 @@ const OptionRow = ({
   formatNumber,
   formatPriceDifference,
   selectedExpiry,
+  atmPriceDetails
 }) => {
   // Calculate ATM/ITM/OTM status
-  const atmStrike = underlying?.ltp
-    ? Math.abs(row.strikePrice - underlying.ltp) < underlying.ltp * 0.005
-    : false;
-
   const callITM = underlying?.ltp && row.strikePrice < underlying.ltp;
   const putITM = underlying?.ltp && row.strikePrice > underlying.ltp;
 
@@ -47,18 +44,18 @@ const OptionRow = ({
   let rowBgColor = '';
   if (isSelected) {
     rowBgColor = 'rgba(25, 118, 210, 0.08)';
-  } else if (atmStrike) {
-    rowBgColor = 'rgba(208, 179, 255, 0.4)';
+  // } else if (atmPriceDetails.strikePrice === row.strikePrice) {
+  //   rowBgColor = 'rgba(120, 94, 161, 0.4)';
   } else if (isSupport) {
     rowBgColor = 'rgba(129, 199, 132, 0.15)';
   } else if (isResistance) {
     rowBgColor = 'rgba(229, 115, 115, 0.15)';
   } else if (row.strikePrice % 2 === 0) {
     rowBgColor = 'rgba(0, 0, 0, 0.02)';
-  } else if (oiDiff > 150000) {
+  } else if (oiDiff > 1000000) {
     rowBgColor = 'rgba(211, 104, 104, 0.1)';
-  } else if (oiDiff <= -150000) {
-    rowBgColor = 'rgba(47, 136, 209, 0.1)';
+  } else if (oiDiff <= -1000000) {
+    rowBgColor = 'rgba(21, 187, 21, 0.1)';
   }
 
   const {parityDeviation, deviationPercentage} = calculateParityDeviation(
@@ -69,6 +66,7 @@ const OptionRow = ({
     selectedExpiry.value,
     RISK_FREE_INTEREST
   );
+
   return (
     <TableRow
       sx={{
@@ -222,7 +220,7 @@ const OptionRow = ({
         align="center"
         sx={{
           fontWeight: 'bold',
-          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+          backgroundColor: `${atmPriceDetails.strikePrice === row.strikePrice ? 'rgba(120, 94, 161, 0.4)' :'rgba(0, 0, 0, 0.08)'}`,
           position: 'relative',
         }}
       >
@@ -261,8 +259,11 @@ const OptionRow = ({
         align="center"
         sx={{
           fontWeight: 'bold',
-          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+          backgroundColor: `${atmPriceDetails.strikePrice === row.strikePrice ? 'rgba(120, 94, 161, 0.4)' :'rgba(0, 0, 0, 0.08)'}`,
           position: 'relative',
+          // display: 'flex',
+          // alignItems: 'center',
+          // // justifyContent: 'space-between',
         }}
       >
         {formatNumber(row.strikePrice, 0)}
@@ -281,6 +282,7 @@ const OptionRow = ({
             }}
           />
         )}
+        
       </TableCell>
 
       {/* Put Columns */}

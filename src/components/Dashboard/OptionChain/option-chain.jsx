@@ -41,7 +41,8 @@ const OptionChain = React.memo(() => {
     tradingOpportunities,
     setSelectedOptionType,
     setSelectedRowStrikePrice,
-    setSelectedOptionDetail
+    setSelectedOptionDetail,
+    atmPriceDetails
   } = useOptionStore();
   console.log("🚀 ~ useEffect ~ selectedExpiry:", selectedExpiry)
 
@@ -202,6 +203,7 @@ const OptionChain = React.memo(() => {
           formatNumber={formatNumber}
           formatPriceDifference={formatPriceDifference}
           selectedExpiry={selectedExpiry}
+          atmPriceDetails={atmPriceDetails}
         />
       ) : !isLoading && !error ? (
         <Box sx={{ textAlign: 'center', my: 4 }}>

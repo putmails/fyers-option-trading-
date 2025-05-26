@@ -28,6 +28,7 @@ function getSentiment(value, type) {
 const SentimentSummary = () => {
   const { optionChainData: { formattedData }, volatilityData } = useOptionStore();
   const {atmPriceDetails, selectedExpiry} = useOptionStore();
+  console.log("🚀 ~ SentimentSummary ~ atmPriceDetails:", atmPriceDetails)
 
   const summary = useMemo(() => {
     if (!formattedData || !formattedData.options?.length) return null;
@@ -58,9 +59,10 @@ const SentimentSummary = () => {
     };
     // OI Change % at ATM
     const oiChange = {
-      CE: atmPriceDetails.call?.oiChangePercent || 0,
-      PE: atmPriceDetails.put?.oiChangePercent || 0
+      CE: atmPriceDetails.call?.oichp || 0,
+      PE: atmPriceDetails.put?.oichp || 0
     };
+    console.log("🚀 ~ summary ~ oiChange:", oiChange)
     return {
       IV: iv,
       'IV/HV': ivhv,
@@ -88,7 +90,7 @@ const SentimentSummary = () => {
                 <TableCell>{label === 'OIChange' ? 'Total OI Change % (ATM)' : label === 'Volume' ? 'Volume (ATM CE/PE)' : label}</TableCell>
                 <TableCell>
                   {typeof value === 'object' ?
-                    label === 'Volume' ? `${formatNumber(value?.CE)} / ${formatNumber(value?.PE)}` : label === 'Arbitrage' ? `${value.parityDeviation} (${value.deviationPercentage})` : '-'  
+                    label === 'Volume' ? `${formatNumber(value?.CE)} / ${formatNumber(value?.PE)}` : label === 'Arbitrage' ? `${value.parityDeviation} (${value.deviationPercentage})` : label === 'OIChange' ? `${value.CE} / ${value.PE}` : '-'
                     : value != null ? Number(value).toFixed(2) : '-'}
                 </TableCell>
                 <TableCell sx={{ textTransform: 'capitalize' }}>{sentiment}</TableCell>
