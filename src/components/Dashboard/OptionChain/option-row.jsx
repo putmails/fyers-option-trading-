@@ -142,22 +142,22 @@ const OptionRow = ({
       >
         {row.call?.ltp ? (
           <Tooltip
-            title={
-              callOpportunity || callVolatility?.tradingSignal
-                ? `${
-                    callOpportunity?.action || callVolatility?.tradingSignal
-                  } opportunity - ${Math.abs(
-                    row.call.priceDifference ||
-                      callVolatility?.skewPercentage ||
-                      0
-                  ).toFixed(1)}% ${
-                    row.call.priceDifference > 0 ||
-                    callVolatility?.skewRatio > 1
-                      ? 'overpriced'
-                      : 'underpriced'
-                  }`
-                : ''
-            }
+            // title={
+            //   callOpportunity || callVolatility?.tradingSignal
+            //     ? `${
+            //         callOpportunity?.action || callVolatility?.tradingSignal
+            //       } opportunity - ${Math.abs(
+            //         row.call.priceDifference ||
+            //           callVolatility?.skewPercentage ||
+            //           0
+            //       ).toFixed(1)}% ${
+            //         row.call.priceDifference > 0 ||
+            //         callVolatility?.skewRatio > 1
+            //           ? 'overpriced'
+            //           : 'underpriced'
+            //       }`
+            //     : ''
+            // }
             arrow
             placement="top"
           >
@@ -168,7 +168,7 @@ const OptionRow = ({
                 justifyContent: 'flex-end',
               }}
             >
-              {(callOpportunity?.action === 'BUY' ||
+              {/* {(callOpportunity?.action === 'BUY' ||
                 callVolatility?.tradingSignal === 'BUY' ||
                 callVolatility?.tradingSignal === 'NEUTRAL_BUY') && (
                 <ArrowUpwardIcon
@@ -185,7 +185,10 @@ const OptionRow = ({
                   color="error"
                   sx={{ mr: 0.5 }}
                 />
-              )}
+              )} */}
+              {
+                (row.call.priceDifference > 0 ? <ArrowUpwardIcon fontSize="small" color="success" sx={{ mr: 0.5 }} /> : <ArrowDownwardIcon fontSize="small" color="error" sx={{ mr: 0.5 }} />)
+              }
               {formatNumber(row.call.ltp, 2)}
             </Box>
           </Tooltip>
