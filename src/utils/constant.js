@@ -10,6 +10,11 @@ export const availableSymbols = [
     { label: 'TCS', value: 'NSE:TCS-EQ' },
     { label: 'INFY', value: 'NSE:INFY-EQ' },
     { label: 'SBIN', value: 'NSE:SBIN-EQ' },
+    { label: 'ADANIENT', value: 'NSE:ADANIENT-EQ' },
+    { label: 'TATAMOTORS', value: 'NSE:TATAMOTORS-EQ' },
+    { label: 'BAJAJ FINANCE', value: 'NSE:BAJFINANCE-EQ' },
+    { label: 'DLF', value: 'NSE:DLF-EQ' },
+    { label: 'ICICIBANK', value: 'NSE:ICICIBANK-EQ' },
   ]
 
 99
