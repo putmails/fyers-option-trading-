@@ -117,7 +117,6 @@ const useOptionStore = create((set, get) => ({
   fetchOptionChain: async (symbol, expiryDateLabelAndValue) => {
     try {
       let expiry = expiryDateLabelAndValue || get().selectedExpiry || '';
-      console.log('🚀 ~ fetchOptionChain: ~ expiry:', expiry);
 
       set({ isLoading: false, error: null });
 
@@ -142,7 +141,6 @@ const useOptionStore = create((set, get) => ({
 
       const formattedData = formatOptionChainData(optionChainResponse.data);
       const closes = await fetchHistoricalCloses(symbol, PERIOD_DAYS);
-      console.log('🚀 ~ fetchOptionChain: ~ formattedData:', formattedData);
 
       // if (!expiry) expiry = formattedData.expiryDates[0];
       if (formattedData && optionChainResponse) {
@@ -176,10 +174,8 @@ const useOptionStore = create((set, get) => ({
             expiry.value
           );
           const closesDataForHV = await closes;
-          // console.log("🚀 ~ fetchOptionChain: ~ closesDataForHV:", closesDataForHV)
 
           const estimatedHV = calculateHistoricalVolatility(closesDataForHV);
-          // console.log("🚀 ~ fetchOptionChain: ~ estimatedHV:", estimatedHV)
 
           // Calculate volatility skew
           const skewAnalysis = {

@@ -101,7 +101,6 @@ function calculateHybridPrice({
   ? calculateCallPrice(S, K, T, r, iv)
   : calculatePutPrice(S, K, T, r, iv);
   
-  // console.log(`🚀 ~ltp :: ${ltp} bsPrice: ${bsPrice}`);
   // if (useOnlyBS) {
     const greeks = calculateGreeks(S, K, T, r, impliedVolatility, type);
     return {

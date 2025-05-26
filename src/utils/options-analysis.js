@@ -128,8 +128,6 @@ export const estimateImpliedVolatility = (
       totalIV += callIV;
       count++;
     }
-    console.log('🚀 ~ estimateImpliedVolatility ~ callIV:', callIV);
-    console.log('🚀 ~ estimateImpliedVolatility ~ totalIV:', totalIV);
   }
 
   if (atmOption.put) {
@@ -146,8 +144,6 @@ export const estimateImpliedVolatility = (
       totalIV += putIV;
       count++;
     }
-    console.log('🚀 ~ estimateImpliedVolatility ~ putIV:', putIV);
-    console.log('🚀 ~ estimateImpliedVolatility ~ totalIV:', totalIV / count);
   }
 
   return count > 0 ? totalIV / count : 0.3;
@@ -342,15 +338,7 @@ export const identifyTradingOpportunities = (optionsWithTheoreticalPrices) => {
 
   // Sort by score (highest first)
   callOpportunities.sort((a, b) => b.score - a.score);
-  console.log(
-    '🚀 ~ identifyTradingOpportunities ~ callOpportunities:',
-    callOpportunities
-  );
   putOpportunities.sort((a, b) => b.score - a.score);
-  console.log(
-    '🚀 ~ identifyTradingOpportunities ~ putOpportunities:',
-    putOpportunities
-  );
 
   return { callOpportunities, putOpportunities };
 };

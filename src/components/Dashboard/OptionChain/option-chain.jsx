@@ -44,13 +44,11 @@ const OptionChain = React.memo(() => {
     setSelectedOptionDetail,
     atmPriceDetails
   } = useOptionStore();
-  console.log("🚀 ~ useEffect ~ selectedExpiry:", selectedExpiry)
 
   const intervalRef = useRef(null);
   // Fetch data when component mounts or symbol changes
   useEffect(() => {
     if (selectedSymbol || selectedExpiry.value) {
-      console.log('🚀 ~ useEffect ~ selectedSymbol:', selectedSymbol);
 
       fetchOptionChain(selectedSymbol, selectedExpiry);
       
@@ -93,19 +91,12 @@ const OptionChain = React.memo(() => {
   // Handle option selection
   const handleOptionSelect = useCallback(
     (row, optionType) => {
-      console.log("🚀 ~ OptionChain ~ optionType:", optionType)
-      console.log("🚀 ~ OptionChain ~ row:", row)
       setSelectedRowStrikePrice?.(row.strikePrice);
       setSelectedOptionType(optionType);
 
       // Get the selected option data
       const optionDetail = optionType === 'call' ? row.call : row.put;
       setSelectedOptionDetail(optionDetail);
-
-      // // Pass to parent component
-      // if (onOptionSelect && optionDetail) {
-      //   onOptionSelect(optionDetail, underlying, selectedExpiry);
-      // }
     },
     [setSelectedRowStrikePrice, setSelectedOptionType, setSelectedOptionDetail]
   );

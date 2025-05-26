@@ -28,7 +28,6 @@ function getSentiment(value, type) {
 const SentimentSummary = () => {
   const { optionChainData: { formattedData }, volatilityData } = useOptionStore();
   const {atmPriceDetails, selectedExpiry} = useOptionStore();
-  console.log("🚀 ~ SentimentSummary ~ atmPriceDetails:", atmPriceDetails)
 
   const summary = useMemo(() => {
     if (!formattedData || !formattedData.options?.length) return null;
@@ -51,7 +50,6 @@ const SentimentSummary = () => {
       selectedExpiry.value,
       RISK_FREE_INTEREST
     );
-    console.log("🚀 ~ summary ~ arbitrage:", arbitrage)
     // Volume at ATM
     const volume = {
       CE: atmPriceDetails.call?.volume || 0,
@@ -62,7 +60,6 @@ const SentimentSummary = () => {
       CE: atmPriceDetails.call?.oichp || 0,
       PE: atmPriceDetails.put?.oichp || 0
     };
-    console.log("🚀 ~ summary ~ oiChange:", oiChange)
     return {
       IV: iv,
       'IV/HV': ivhv,

@@ -33,9 +33,7 @@ const ControlPanel = React.memo(() => {
 
   const handleSelectExpiry = useCallback((event) => {
     const selectedDateValue =event.target.value;
-    console.log("🚀 ~ handleSelectExpiry ~ selectedDateValue:", selectedDateValue)
     const selectedDate = expiryDates.find(date => date.label === selectedDateValue)
-    console.log("🚀 ~ handleSelectExpiry ~ selectedDate:", selectedDate)
     setSelectedExpiry(selectedDate);
   }, [expiryDates, setSelectedExpiry]);
 

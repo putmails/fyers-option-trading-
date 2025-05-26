@@ -23,7 +23,6 @@ export const getOptionChainData = async (
     let response = null;
     if (isFile) {
       response = data;
-      console.log('🚀 ~ Response from file:: response:', response);
     } else {
       // Create a new instance of FyersAPI
       const fyers = getFyersModelInstance();
@@ -37,28 +36,6 @@ export const getOptionChainData = async (
 
       // Fetch option chain data
       response = await fyers.getOptionChain(params);
-      // const response = await new Promise((resolve) => {
-      //   console.log("########################################## API is triggering")
-      //     resolve({
-      //       s: 'ok',
-      //       code: 200,
-      //       data: {
-      //         optionsChain: [
-      //           { strike_price: -1, option_type: 'CE', ...params },
-      //           { strike_price: 1000, option_type: 'CE', ...params },
-      //           { strike_price: 1100, option_type: 'PE', ...params },
-      //           { strike_price: 1200, option_type: 'CE', ...params },
-      //           { strike_price: 1300, option_type: 'PE', ...params },
-      //         ],
-      //         expiryData: [
-      //           { date: '2023-10-26', expiry: '2023-10-26' },
-      //           { date: '2023-11-02', expiry: '2023-11-02' },
-      //         ],
-      //       },
-      //     });
-      // }
-      // );
-      // console.log('🚀 ~ response from API Call::', response.s);
     }
 
       return response;
@@ -190,7 +167,6 @@ export const fetchHistoricalCloses = async (symbol, days = PERIOD_DAYS) => {
 
   try {
     const response = await fyers.getHistory(body);
-    console.log("🚀 ~ fetchHistoricalCloses ~ response:", response)
     const candles = await response.candles;
 
     if (!candles || days < candles.length) {
@@ -200,7 +176,6 @@ export const fetchHistoricalCloses = async (symbol, days = PERIOD_DAYS) => {
 
     // Extract only the most recent N close prices
     const closes = candles.slice(-days).map((candle) => candle[4]); // 4 = close
-    console.log("🚀 ~ fetchHistoricalCloses ~ closes:", closes)
     return closes;
   } catch (error) {
     console.error(

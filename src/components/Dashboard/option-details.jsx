@@ -29,32 +29,11 @@ const OptionDetails = () => {
   // Get state from Zustand store
   const { 
     underlying, 
-    // selectedExpiry,
     selectedRowStrikePrice:strikePrice,
     selectedOptionDetail:option, 
     selectedOptionType: optionType,
     volatilityData,
-    // setSelectedOptionType
   } = useOptionStore();
-    console.log("🚀 ~ OptionDetails ~ option:", optionType, option)
-
-  // Find the selected option data
-  // const selectedOptionData = useMemo(() => {
-  //   if (!selectedRow || !enhancedOptions) return null;
-    
-  //   // Find the option with the matching strike price
-  //   const optionData = enhancedOptions.find(opt => opt.strikePrice === selectedRow);
-    
-  //   if (!optionData || !selectedOptionType) return null;
-    
-  //   // Return call or put data based on selectedOptionType
-  //   return {
-  //     option: optionData[selectedOptionType],
-  //     strikePrice: optionData.strikePrice,
-  //     optionType: selectedOptionType,
-  //     underlying: underlying
-  //   };
-  // }, [selectedRow, selectedOptionType, enhancedOptions, underlying]);
 
   // Early return if no option is selected
   if (!option) {

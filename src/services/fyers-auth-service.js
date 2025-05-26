@@ -24,10 +24,6 @@ const initFyers = () => {
 export const generateAuthCodeUrl = () => {
   initFyers();
   const generateAuthcodeURL = fyers.generateAuthCode();
-  console.log(
-    '🚀 ~ generateAuthCodeUrl ~ generateAuthcodeURL:',
-    generateAuthcodeURL
-  );
   return generateAuthcodeURL;
 };
 
