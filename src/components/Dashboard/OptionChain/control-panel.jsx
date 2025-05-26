@@ -10,7 +10,7 @@ import {
   Slider,
 } from '@mui/material';
 import useOptionStore from '../../../store/option-store';
-import { availableSymbols } from '../../../utils/constant';
+import { availableOptions } from '../../../utils/constant';
 
 /**
  * Input controls for the option chain
@@ -37,7 +37,7 @@ const ControlPanel = React.memo(() => {
     setSelectedExpiry(selectedDate);
   }, [expiryDates, setSelectedExpiry]);
 
-  if (availableSymbols.length === 0) return null;
+  if (availableOptions.length === 0) return null;
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
       <Grid item xs={12} md={4}>
@@ -51,7 +51,7 @@ const ControlPanel = React.memo(() => {
             onChange={handleSelectSymbol}
             disabled={isLoading}
           >
-            {availableSymbols.map((sym) => (
+            {availableOptions.map((sym) => (
               <MenuItem key={sym.value} value={sym.value}>
                 {sym.label}
               </MenuItem>

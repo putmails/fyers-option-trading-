@@ -7,6 +7,7 @@ import Home from './pages/home-page';
 import AuthCallback from './pages/auth-callback';
 import Dashboard from './pages/dashboard-page';
 import NotFound from './pages/not-found-page';
+import RecordDataPage from './pages/record-data-page';
 
 // Create a theme instance with better color palette for trading platform
 const theme = createTheme({
@@ -79,6 +80,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/callback" element={<AuthCallback />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/record-data" element={<RecordDataPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

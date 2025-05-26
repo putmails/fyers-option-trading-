@@ -1,4 +1,4 @@
-export const availableSymbols = [
+export const availableOptions = [
     { label: 'NIFTY', value: 'NSE:NIFTY50-INDEX' },
     { label: 'SENSEX', value: 'BSE:SENSEX-INDEX' },
     { label: 'BankNIFTY', value: 'NSE:NIFTYBANK-INDEX' },
