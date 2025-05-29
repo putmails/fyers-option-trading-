@@ -3,7 +3,7 @@ export const availableOptions = [
     { label: 'SENSEX', value: 'BSE:SENSEX-INDEX' },
     { label: 'BankNIFTY', value: 'NSE:NIFTYBANK-INDEX' },
     { label: 'FinNIFTY', value: 'NSE:FINNIFTY-INDEX' },
-    { label: 'NIFTYNXT50', value: 'NSE:NIFTYNXT50-INDEX' },
+    // { label: 'NIFTYNXT50', value: 'NSE:NIFTYNXT50-INDEX' },
     { label: 'BANKEX', value: 'BSE:BANKEX-INDEX' },
     { label: 'RELIANCE', value: 'NSE:RELIANCE-EQ' },
     { label: 'HDFC', value: 'NSE:HDFCBANK-EQ' },
@@ -23,7 +23,7 @@ export const availableOptions = [
     { label: 'LIC-HOUSING', value: 'NSE:LICHSGFIN-EQ' },
   ]
 
-99
+
   export const TOP_STRIKE_COUNT = 3;
   export const PERIOD_DAYS = 30;
   export const RISK_FREE_INTEREST = 0.065;
