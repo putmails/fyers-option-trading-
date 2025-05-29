@@ -4,7 +4,7 @@ import {
   formatOptionChainData,
   getOptionChainData,
 } from '../services/fyers-option-chain-service';
-import { availableSymbols, PERIOD_DAYS } from '../utils/constant';
+import { availableOptions, PERIOD_DAYS } from '../utils/constant';
 import {
   calculateSupportResistance,
   estimateImpliedVolatility,
@@ -47,7 +47,7 @@ const useOptionStore = create((set, get) => ({
   selectedOptionType: null,
   selectedRowStrikePrice: null,
   selectedOptionDetail: null,
-  selectedSymbol: availableSymbols[1].value, // Default to the first symbol in the list
+  selectedSymbol: availableOptions[1].value, // Default to the first symbol in the list
   selectedExpiry: {
     label: null,
     value: null,
@@ -152,14 +152,8 @@ const useOptionStore = create((set, get) => ({
           underlying: formattedData.underlying,
           options: sortedOptions,
           expiryDates: formattedData.expiryDates,
+          selectedExpiry: expiry
         });
-
-        if (
-          formattedData.expiryDates.length > 0 &&
-          !expiryDateLabelAndValue.value
-        ) {
-          set({ selectedExpiry: expiry }); // TODO: Expiry date label and value can be mismatched.
-        }
 
         // Calculate support and resistance levels
         if (formattedData.underlying && formattedData.underlying.ltp) {
@@ -329,7 +323,7 @@ const useOptionStore = create((set, get) => ({
   clearData: () =>
     set({
       optionChainData: {},
-      selectedSymbol: availableSymbols[0].value,
+      selectedSymbol: availableOptions[0].value,
       isLoading: false,
       error: null,
     }),

@@ -112,6 +112,7 @@ export function getOptionType(option) {
 }
 
 export function calculateParityDeviation(callLTP, putLTP, spot, strike, expiryInMS, r = 0.065) {
+console.log("🚀 ~ calculateParityDeviation ~ callLTP, putLTP, spot, strike, expiryInMS:", callLTP, putLTP, spot, strike, expiryInMS)
 
   const T = getTimeToExpiry(expiryInMS)
 
